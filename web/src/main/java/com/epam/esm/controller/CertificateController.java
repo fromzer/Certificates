@@ -1,10 +1,9 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftCertificateDTO;
-import com.epam.esm.exception.ServiceException;
+import com.epam.esm.dto.GiftTagDTO;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,22 +19,22 @@ public class CertificateController {
 
     @PostMapping("/certificates")
     public Long create(@RequestBody GiftCertificateDTO giftCertificateDTO) {
-        try {
-            return giftCertificateService.create(giftCertificateDTO);
-        } catch (ServiceException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return giftCertificateService.create(giftCertificateDTO);
+    }
+
+    @PatchMapping("/certificates")
+    public GiftCertificateDTO update(@RequestBody GiftCertificateDTO giftCertificateDTO) {
+        return giftCertificateService.update(giftCertificateDTO);
+    }
+
+    @DeleteMapping("/certificates")
+    public void delete(@RequestBody GiftCertificateDTO certificateDTO) {
+        giftCertificateService.delete(certificateDTO);
     }
 
     @GetMapping("/certificates/{id}")
     public GiftCertificateDTO getCertificateById(@PathVariable Long id) {
-        try {
-            return giftCertificateService.findById(id).get();
-        } catch (ServiceException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return giftCertificateService.findById(id).get();
     }
 
     @GetMapping("/certificates")

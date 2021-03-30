@@ -1,8 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftTagDTO;
-import com.epam.esm.exception.ServiceException;
-import com.epam.esm.entity.GiftTag;
 import com.epam.esm.service.impl.GiftTagServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,38 +18,18 @@ public class TagController {
     }
 
     @PostMapping("/tags")
-    public Long create(@RequestBody GiftTag giftTag) {
-        GiftTagDTO giftTagDTO = GiftTagDTO.builder()
-                .giftTag(giftTag)
-                .build();
-        try {
-            return tagService.create(giftTagDTO);
-        } catch (ServiceException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public Long create(@RequestBody GiftTagDTO tag) {
+        return tagService.create(tag);
     }
 
     @DeleteMapping("/tags")
-    public void delete(@RequestBody GiftTag giftTag) {
-        GiftTagDTO giftTagDTO = GiftTagDTO.builder()
-                .giftTag(giftTag)
-                .build();
-        try {
-            tagService.delete(giftTagDTO);
-        } catch (ServiceException e) {
-            e.printStackTrace();
-        }
+    public void delete(@RequestBody GiftTagDTO giftTagDTO) {
+        tagService.delete(giftTagDTO);
     }
 
     @GetMapping("/tags/{id}")
     public GiftTagDTO getTagById(@PathVariable Long id) {
-        try {
-            return tagService.findById(id).get();
-        } catch (ServiceException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return tagService.findById(id).get();
     }
 
 //    @GetMapping("/tags")
@@ -66,11 +44,6 @@ public class TagController {
 
     @GetMapping("/tags")
     public List<GiftTagDTO> getAll() {
-        try {
-            return tagService.findAll();
-        } catch (ServiceException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return tagService.findAll();
     }
 }
