@@ -3,20 +3,22 @@ package com.epam.esm.dao.extractor;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.util.ToDTOConverter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CertificateResultSetExtractor implements ResultSetExtractor<CertificateDTO> {
 
     @Override
     public CertificateDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
-        List<Tag> tagList = new ArrayList<>();
+        Set<Tag> tagSet = new LinkedHashSet<>();
         Certificate certificate = null;
         while (rs.next()) {
             if (certificate == null) {
@@ -36,24 +38,11 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<Certifi
                         .id(rs.getLong("tag.id"))
                         .name(rs.getString("tag.name"))
                         .build();
-                tagList.add(tag);
+                tagSet.add(tag);
             }
         }
-        return convertToDTO(tagList, certificate);
-    }
-
-    private CertificateDTO convertToDTO(List<Tag> tagList, Certificate certificate) {
-        CertificateDTO certificateDTO;
-        if (tagList.isEmpty()) {
-            certificateDTO = CertificateDTO.builder()
-                    .certificate(certificate)
-                    .build();
-        } else {
-            certificateDTO = CertificateDTO.builder()
-                    .certificate(certificate)
-                    .tags(tagList)
-                    .build();
-        }
+        CertificateDTO certificateDTO = ToDTOConverter.convertToCertificateDTO(certificate);
+        certificateDTO.getTags().addAll(tagSet.stream().map(ToDTOConverter::convertToTagDTO).collect(Collectors.toSet()));
         return certificateDTO;
     }
 }
