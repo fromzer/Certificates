@@ -1,4 +1,4 @@
-package com.epam.esm.dao.impl;
+package com.epam.esm.dao.mysql;
 
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dao.extractor.TagListResultSetExtractor;
@@ -18,24 +18,17 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class TagDAOImpl implements TagDAO {
-    private static final String SQL_SELECT_FIND_BY_ID = "SELECT tag.*, gift_certificate.* FROM tag\n" +
-            "LEFT OUTER JOIN gift_certificate_tag gct on tag.id = gct.tag_id\n" +
-            "LEFT OUTER JOIN gift_certificate gift_certificate on gift_certificate.id = gct.gift_certificate_id WHERE tag.id = :id;";
-    private static final String SQL_SELECT_FIND_NAME = "SELECT tag.*, gift_certificate.* FROM tag\n" +
-            "LEFT OUTER JOIN gift_certificate_tag gct on tag.id = gct.tag_id\n" +
-            "LEFT OUTER JOIN gift_certificate gift_certificate on gift_certificate.id = gct.gift_certificate_id WHERE tag.name=:name;";
-    private static final String SQL_SELECT_FIND_ALL = "SELECT tag.*, gift_certificate.* FROM tag\n" +
-            "LEFT OUTER JOIN gift_certificate_tag gct on tag.id = gct.tag_id\n" +
-            "LEFT OUTER JOIN gift_certificate gift_certificate on gift_certificate.id = gct.gift_certificate_id";
+public class TagDAOMySQL implements TagDAO {
+    private static final String SQL_SELECT_FIND_BY_ID = "SELECT id, name FROM tag WHERE id = :id;";
+    private static final String SQL_SELECT_FIND_NAME = "SELECT id, name FROM tag WHERE name=:name;";
+    private static final String SQL_SELECT_FIND_ALL = "SELECT id, name FROM tag";
     private static final String SQL_INSERT_CREATE_TAG = "INSERT INTO tag(name) VALUE (:name);";
     private static final String SQL_DELETE_TAG = "DELETE FROM tag WHERE id = :id;";
-    private static final String SQL_UPDATE_TAG = "UPDATE tag SET name = :name WHERE id = :id";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    public TagDAOImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+    public TagDAOMySQL(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

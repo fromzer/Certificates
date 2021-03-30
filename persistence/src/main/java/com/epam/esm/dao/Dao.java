@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface Dao<K, T> {
-    K create(T entity) throws DAOException;
+    K create(T entity);
 
-    Optional<T> findById(K id) throws DAOException;
+    Optional<T> findById(K id);
 
-    void delete(T entity) throws DAOException;
+    void delete(T entity);
 
-    List<T> findAll() throws DAOException;
+    List<T> findAll();
 }
