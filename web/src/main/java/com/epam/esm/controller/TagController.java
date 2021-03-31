@@ -1,8 +1,12 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftTagDTO;
+import com.epam.esm.exception.CreateResourceException;
+import com.epam.esm.exception.DeleteResourceException;
+import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.service.impl.GiftTagServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,18 +22,19 @@ public class TagController {
     }
 
     @PostMapping("/tags")
-    public Long create(@RequestBody GiftTagDTO tag) {
-        return tagService.create(tag);
+    public ResponseEntity<Long> create(@RequestBody GiftTagDTO tag) throws CreateResourceException {
+        return ResponseEntity.ok(tagService.create(tag));
     }
 
     @DeleteMapping("/tags")
-    public void delete(@RequestBody GiftTagDTO giftTagDTO) {
+    public ResponseEntity<Object> delete(@RequestBody GiftTagDTO giftTagDTO) throws DeleteResourceException {
         tagService.delete(giftTagDTO);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/tags/{id}")
-    public GiftTagDTO getTagById(@PathVariable Long id) {
-        return tagService.findById(id).get();
+    public ResponseEntity<GiftTagDTO> getTagById(@PathVariable Long id) throws ResourceNotFoundException {
+        return ResponseEntity.ok(tagService.findById(id));
     }
 
 //    @GetMapping("/tags")
@@ -43,7 +48,7 @@ public class TagController {
 //    }
 
     @GetMapping("/tags")
-    public List<GiftTagDTO> getAll() {
-        return tagService.findAll();
+    public ResponseEntity<List<GiftTagDTO>> getAll() throws ResourceNotFoundException {
+        return ResponseEntity.ok(tagService.findAll());
     }
 }

@@ -16,6 +16,7 @@ dependencies {
     implementation group: 'org.springframework', name: 'spring-core', version: springVersion
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.23'
     implementation group: 'org.springframework', name: 'spring-jdbc', version: springVersion
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
     annotationProcessor 'org.projectlombok:lombok:1.18.18'
     testCompile group: 'org.springframework', name: 'spring-test', version: springVersion

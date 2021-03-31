@@ -20,6 +20,7 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<Certifi
     public CertificateDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
         Set<Tag> tagSet = new LinkedHashSet<>();
         Certificate certificate = null;
+        CertificateDTO certificateDTO = null;
         while (rs.next()) {
             if (certificate == null) {
                 certificate = Certificate.builder()
@@ -41,8 +42,11 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<Certifi
                 tagSet.add(tag);
             }
         }
-        CertificateDTO certificateDTO = ToDTOConverter.convertToCertificateDTO(certificate);
-        certificateDTO.getTags().addAll(tagSet.stream().map(ToDTOConverter::convertToTagDTO).collect(Collectors.toSet()));
+
+        if (certificate != null) {
+            certificateDTO = ToDTOConverter.convertToCertificateDTO(certificate);
+            certificateDTO.getTags().addAll(tagSet.stream().map(ToDTOConverter::convertToTagDTO).collect(Collectors.toSet()));
+        }
         return certificateDTO;
     }
 }

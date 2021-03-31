@@ -6,8 +6,14 @@ import com.epam.esm.dao.extractor.CertificateResultSetExtractor;
 import com.epam.esm.dao.extractor.TagListResultSetExtractor;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.TagDTO;
-import org.jetbrains.annotations.NotNull;
+import com.epam.esm.exception.CreateEntityException;
+import com.epam.esm.exception.DeleteEntityException;
+import com.epam.esm.exception.EntityRetrievalException;
+import com.epam.esm.exception.UpdateEntityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,6 +25,7 @@ import java.util.*;
 
 @Repository
 public class CertificateDAOMySQL implements CertificateDAO {
+    private static final Logger logger = LoggerFactory.getLogger(CertificateDAOMySQL.class);
     private static final String SQL_SELECT_FIND_BY_ID = "SELECT gift_certificate.*, tag.* FROM gift_certificate\n" +
             "LEFT OUTER JOIN gift_certificate_tag gct on gift_certificate.id = gct.gift_certificate_id\n" +
             "LEFT OUTER JOIN tag tag on gct.tag_id = tag.id\n" +
@@ -43,35 +50,47 @@ public class CertificateDAOMySQL implements CertificateDAO {
     }
 
     @Override
-    public CertificateDTO update(CertificateDTO certificateDTO) {
+    public CertificateDTO update(CertificateDTO certificateDTO) throws UpdateEntityException {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("id", certificateDTO.getId());
-        jdbcTemplate.update(getUpdateSqlQuery(certificateDTO), parameterSource);
-        if (certificateDTO.getTags() != null) {
-            List<Long> tagsIdList = createTags(certificateDTO.getTags());
-            AddLinkBetweenTagAndCertificate(certificateDTO.getId(), tagsIdList);
+        CertificateDTO result = null;
+        try {
+            jdbcTemplate.update(getUpdateSqlQuery(certificateDTO), parameterSource);
+            if (certificateDTO.getTags() != null) {
+                List<Long> tagsIdList = createTags(certificateDTO.getTags());
+                AddLinkBetweenTagAndCertificate(certificateDTO.getId(), tagsIdList);
+                result = findById(certificateDTO.getId()).get();
+            }
+        } catch (DataAccessException | CreateEntityException | EntityRetrievalException ex) {
+            logger.error("Request update certificate execution error", ex);
+            throw new UpdateEntityException("Request update certificate execution error", ex);
         }
-        return findById(certificateDTO.getId()).get();
+        return result;
     }
 
     @Override
-    public Long create(CertificateDTO entity) {
+    public Long create(CertificateDTO entity) throws CreateEntityException {
         KeyHolder holder = new GeneratedKeyHolder();
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", entity.getName())
                 .addValue("description", entity.getDescription())
                 .addValue("price", entity.getPrice())
                 .addValue("duration", entity.getDuration());
-        jdbcTemplate.update(SQL_INSERT_CREATE_CERTIFICATE, parameterSource, holder);
-        Long certificateId = holder.getKey().longValue();
-        if (entity.getTags() != null) {
-            List<Long> tagsIdList = createTags(entity.getTags());
-            AddLinkBetweenTagAndCertificate(certificateId, tagsIdList);
+        try {
+            jdbcTemplate.update(SQL_INSERT_CREATE_CERTIFICATE, parameterSource, holder);
+            Long certificateId = holder.getKey().longValue();
+            if (entity.getTags() != null) {
+                List<Long> tagsIdList = createTags(entity.getTags());
+                AddLinkBetweenTagAndCertificate(certificateId, tagsIdList);
+            }
+            return certificateId;
+        } catch (DataAccessException ex) {
+            logger.error("Request create certificate execution error", ex);
+            throw new CreateEntityException("Request create certificate execution error", ex);
         }
-        return certificateId;
     }
 
-    private List<Long> createTags(Set<TagDTO> tagList) {
+    private List<Long> createTags(Set<TagDTO> tagList) throws CreateEntityException {
         List<Long> tagsIdList = new ArrayList<>();
         for (TagDTO tagDTO : tagList) {
             tagsIdList.add(tagDAO.create(tagDTO));
@@ -89,25 +108,35 @@ public class CertificateDAOMySQL implements CertificateDAO {
     }
 
     @Override
-    public Optional<CertificateDTO> findById(Long id) {
+    public Optional<CertificateDTO> findById(Long id) throws EntityRetrievalException {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("id", id);
-        return Optional.of(jdbcTemplate.query(SQL_SELECT_FIND_BY_ID, parameterSource, new CertificateResultSetExtractor()));
+        try {
+            return Optional.ofNullable(jdbcTemplate.query(SQL_SELECT_FIND_BY_ID, parameterSource, new CertificateResultSetExtractor()));
+        } catch (DataAccessException ex) {
+            logger.error("Request find by id certificate execution error", ex);
+            throw new EntityRetrievalException("Request find by id certificate execution error", ex);
+        }
     }
 
     @Override
-    public void delete(CertificateDTO entity) {
+    public void delete(CertificateDTO entity) throws DeleteEntityException {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("id", entity.getId());
-        jdbcTemplate.update(SQL_DELETE_CERTIFICATE, parameterSource);
+        try {
+            jdbcTemplate.update(SQL_DELETE_CERTIFICATE, parameterSource);
+        } catch (DataAccessException ex) {
+            logger.error("Request delete certificate execution error", ex);
+            throw new DeleteEntityException("Request delete certificate execution error", ex);
+        }
     }
 
     @Override
-    public List<CertificateDTO> findAll() {
+    public List<CertificateDTO> findAll() throws EntityRetrievalException {
         return getCertificateWithTags(SQL_SELECT_FIND_ALL);
     }
 
-    public List<CertificateDTO> findCertificateByParams(String tag, String name, String description, String sort) {
+    public List<CertificateDTO> findCertificateByParams(String tag, String name, String description, String sort) throws EntityRetrievalException {
         String query = querySelectFindByParams(tag, name, description, sort);
         return getCertificateWithTags(query);
     }
@@ -118,10 +147,10 @@ public class CertificateDAOMySQL implements CertificateDAO {
         String where = "WHERE id = :id";
         StringBuilder sb = new StringBuilder();
         sb.append(sqlRequest);
-        sb.append(certificateDTO.getName() == null? "": "name = '" + certificateDTO.getName() + "', ");
-        sb.append(certificateDTO.getDescription() == null? "": "description = '" + certificateDTO.getDescription() + "', ");
-        sb.append(certificateDTO.getPrice() == null? "": "price = " + certificateDTO.getPrice() + ", ");
-        sb.append(certificateDTO.getDuration() == null? "": "duration = " + certificateDTO.getDuration() + ", ");
+        sb.append(certificateDTO.getName() == null ? "" : "name = '" + certificateDTO.getName() + "', ");
+        sb.append(certificateDTO.getDescription() == null ? "" : "description = '" + certificateDTO.getDescription() + "', ");
+        sb.append(certificateDTO.getPrice() == null ? "" : "price = " + certificateDTO.getPrice() + ", ");
+        sb.append(certificateDTO.getDuration() == null ? "" : "duration = " + certificateDTO.getDuration() + ", ");
         sb.append(update);
         sb.append(where);
         return sb.toString();

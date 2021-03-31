@@ -9,22 +9,30 @@ import java.util.LinkedHashSet;
 
 public class ToDTOConverter {
     public static CertificateDTO convertToCertificateDTO(Certificate certificate) {
-        return CertificateDTO.builder()
-                .id(certificate.getId())
-                .name(certificate.getName())
-                .description(certificate.getDescription())
-                .duration(certificate.getDuration())
-                .price(certificate.getPrice())
-                .createDate(certificate.getCreateDate())
-                .lastUpdateDate(certificate.getLastUpdateDate())
-                .tags(new LinkedHashSet<>())
-                .build();
+        CertificateDTO certificateDTO = null;
+        if (certificate != null) {
+            certificateDTO = CertificateDTO.builder()
+                    .id(certificate.getId())
+                    .name(certificate.getName())
+                    .description(certificate.getDescription())
+                    .duration(certificate.getDuration())
+                    .price(certificate.getPrice())
+                    .createDate(certificate.getCreateDate())
+                    .lastUpdateDate(certificate.getLastUpdateDate())
+                    .tags(new LinkedHashSet<>())
+                    .build();
+        }
+        return certificateDTO;
     }
 
     public static TagDTO convertToTagDTO(Tag tag) {
-        return TagDTO.builder()
-                .id(tag.getId())
-                .name(tag.getName())
-                .build();
+        TagDTO tagDTO = null;
+        if (tag != null) {
+            tagDTO = TagDTO.builder()
+                    .id(tag.getId())
+                    .name(tag.getName())
+                    .build();
+        }
+        return tagDTO;
     }
 }
