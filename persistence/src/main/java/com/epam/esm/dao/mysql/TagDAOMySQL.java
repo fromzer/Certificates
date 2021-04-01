@@ -29,7 +29,7 @@ public class TagDAOMySQL implements TagDAO {
     private static final String SQL_SELECT_FIND_BY_ID = "SELECT id, name FROM tag WHERE id = :id;";
     private static final String SQL_SELECT_FIND_NAME = "SELECT id, name FROM tag WHERE name=:name;";
     private static final String SQL_SELECT_FIND_ALL = "SELECT id, name FROM tag";
-    private static final String SQL_INSERT_CREATE_TAG = "INSERT INTO tag(name) VALUE (:name);";
+    private static final String SQL_INSERT_CREATE_TAG = "INSERT INTO tag(name) VALUES (:name);";
     private static final String SQL_DELETE_TAG = "DELETE FROM tag WHERE id = :id;";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -45,7 +45,7 @@ public class TagDAOMySQL implements TagDAO {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("name", entity.getName());
         try {
-            jdbcTemplate.update(SQL_INSERT_CREATE_TAG, parameterSource, holder);
+            jdbcTemplate.update(SQL_INSERT_CREATE_TAG, parameterSource, holder, new String[]{"id"});
         } catch (DataAccessException ex) {
             logger.error("Request create tag execution error", ex);
             throw new CreateEntityException("Request create tag execution error", ex);

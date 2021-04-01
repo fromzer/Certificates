@@ -77,7 +77,7 @@ public class CertificateDAOMySQL implements CertificateDAO {
                 .addValue("price", entity.getPrice())
                 .addValue("duration", entity.getDuration());
         try {
-            jdbcTemplate.update(SQL_INSERT_CREATE_CERTIFICATE, parameterSource, holder);
+            jdbcTemplate.update(SQL_INSERT_CREATE_CERTIFICATE, parameterSource, holder, new String[]{"id"});
             Long certificateId = holder.getKey().longValue();
             if (entity.getTags() != null) {
                 List<Long> tagsIdList = createTags(entity.getTags());
