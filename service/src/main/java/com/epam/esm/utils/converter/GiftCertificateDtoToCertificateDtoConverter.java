@@ -2,8 +2,8 @@ package com.epam.esm.utils.converter;
 
 
 import com.epam.esm.dto.CertificateDTO;
-import com.epam.esm.dto.GiftCertificateDTO;
-import com.epam.esm.dto.GiftTagDTO;
+import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.GiftTag;
 import com.epam.esm.dto.TagDTO;
 
 import java.util.LinkedHashSet;
@@ -11,67 +11,49 @@ import java.util.Set;
 
 public class GiftCertificateDtoToCertificateDtoConverter {
 
-    public static GiftCertificateDTO convertToServiceLayerEntity(CertificateDTO entityDto) {
-        if (entityDto.getTags().isEmpty()) {
-            return GiftCertificateDTO.builder()
-                    .id(entityDto.getId())
-                    .name(entityDto.getName())
-                    .description(entityDto.getDescription())
-                    .price(entityDto.getPrice())
-                    .duration(entityDto.getDuration())
-                    .createDate(entityDto.getCreateDate())
-                    .lastUpdateDate(entityDto.getLastUpdateDate())
-                    .build();
-        } else {
-            Set<GiftTagDTO> tagDTOSet = new LinkedHashSet<>();
+    public static GiftCertificate convertToServiceLayerEntity(CertificateDTO entityDto) {
+        GiftCertificate giftCertificate = GiftCertificate.builder()
+                .id(entityDto.getId())
+                .name(entityDto.getName())
+                .description(entityDto.getDescription())
+                .price(entityDto.getPrice())
+                .duration(entityDto.getDuration())
+                .createDate(entityDto.getCreateDate())
+                .lastUpdateDate(entityDto.getLastUpdateDate())
+                .build();
+        if (!entityDto.getTags().isEmpty()) {
+            Set<GiftTag> tagDTOSet = new LinkedHashSet<>();
             for (TagDTO tagDTO : entityDto.getTags()) {
-                tagDTOSet.add(GiftTagDTO.builder()
+                tagDTOSet.add(GiftTag.builder()
                         .id(tagDTO.getId())
                         .name(tagDTO.getName())
                         .build());
             }
-            return GiftCertificateDTO.builder()
-                    .id(entityDto.getId())
-                    .name(entityDto.getName())
-                    .description(entityDto.getDescription())
-                    .price(entityDto.getPrice())
-                    .duration(entityDto.getDuration())
-                    .createDate(entityDto.getCreateDate())
-                    .lastUpdateDate(entityDto.getLastUpdateDate())
-                    .tags(tagDTOSet)
-                    .build();
+            giftCertificate.setTags(tagDTOSet);
         }
+        return giftCertificate;
     }
 
-    public static CertificateDTO convertToPersistenceLayerEntity(GiftCertificateDTO entityDto) {
-        if (entityDto.getTags() == null) {
-            return CertificateDTO.builder()
-                    .id(entityDto.getId())
-                    .name(entityDto.getName())
-                    .description(entityDto.getDescription())
-                    .price(entityDto.getPrice())
-                    .duration(entityDto.getDuration())
-                    .createDate(entityDto.getCreateDate())
-                    .lastUpdateDate(entityDto.getLastUpdateDate())
-                    .build();
-        } else {
+    public static CertificateDTO convertToPersistenceLayerEntity(GiftCertificate entityDto) {
+        CertificateDTO certificateDTO = CertificateDTO.builder()
+                .id(entityDto.getId())
+                .name(entityDto.getName())
+                .description(entityDto.getDescription())
+                .price(entityDto.getPrice())
+                .duration(entityDto.getDuration())
+                .createDate(entityDto.getCreateDate())
+                .lastUpdateDate(entityDto.getLastUpdateDate())
+                .build();
+        if (entityDto.getTags() != null) {
             Set<TagDTO> tagDTOSet = new LinkedHashSet<>();
-            for (GiftTagDTO giftTagDTO : entityDto.getTags()) {
+            for (GiftTag giftTag : entityDto.getTags()) {
                 tagDTOSet.add(TagDTO.builder()
-                        .id(giftTagDTO.getId())
-                        .name(giftTagDTO.getName())
+                        .id(giftTag.getId())
+                        .name(giftTag.getName())
                         .build());
             }
-            return CertificateDTO.builder()
-                    .id(entityDto.getId())
-                    .name(entityDto.getName())
-                    .description(entityDto.getDescription())
-                    .price(entityDto.getPrice())
-                    .duration(entityDto.getDuration())
-                    .createDate(entityDto.getCreateDate())
-                    .lastUpdateDate(entityDto.getLastUpdateDate())
-                    .tags(tagDTOSet)
-                    .build();
+            certificateDTO.setTags(tagDTOSet);
         }
+        return certificateDTO;
     }
 }

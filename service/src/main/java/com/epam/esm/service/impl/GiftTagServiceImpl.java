@@ -1,7 +1,7 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.mysql.TagDAOMySQL;
-import com.epam.esm.dto.GiftTagDTO;
+import com.epam.esm.dao.impl.TagDAOImpl;
+import com.epam.esm.model.GiftTag;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.*;
 import com.epam.esm.service.GiftTagService;
@@ -17,15 +17,15 @@ import java.util.List;
 @Service
 public class GiftTagServiceImpl implements GiftTagService {
     private static final Logger logger = LoggerFactory.getLogger(GiftTagServiceImpl.class);
-    private final TagDAOMySQL tagDAO;
+    private final TagDAOImpl tagDAO;
 
     @Autowired
-    public GiftTagServiceImpl(TagDAOMySQL tagDAO) {
+    public GiftTagServiceImpl(TagDAOImpl tagDAO) {
         this.tagDAO = tagDAO;
     }
 
     @Override
-    public Long create(GiftTagDTO entity) throws CreateResourceException {
+    public Long create(GiftTag entity) throws CreateResourceException {
         try {
             return tagDAO.create(GiftTagDtoToTagDtoConverter.convertToPersistenceLayerEntity(entity));
         } catch (CreateEntityException e) {
@@ -35,7 +35,7 @@ public class GiftTagServiceImpl implements GiftTagService {
     }
 
     @Override
-    public GiftTagDTO findById(Long id) throws ResourceNotFoundException {
+    public GiftTag findById(Long id) throws ResourceNotFoundException {
         try {
             TagDTO tagDTO = tagDAO.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Requested resource not found (id = " + id + ")"));
@@ -47,7 +47,7 @@ public class GiftTagServiceImpl implements GiftTagService {
     }
 
     @Override
-    public GiftTagDTO findByName(String name) throws ResourceNotFoundException {
+    public GiftTag findByName(String name) throws ResourceNotFoundException {
         try {
             return GiftTagDtoToTagDtoConverter.convertToServiceLayerEntity(tagDAO.findByName(name));
         } catch (EntityRetrievalException e) {
@@ -57,7 +57,7 @@ public class GiftTagServiceImpl implements GiftTagService {
     }
 
     @Override
-    public void delete(GiftTagDTO entity) throws DeleteResourceException {
+    public void delete(GiftTag entity) throws DeleteResourceException {
         try {
             tagDAO.delete(GiftTagDtoToTagDtoConverter.convertToPersistenceLayerEntity(entity));
         } catch (DeleteEntityException e) {
@@ -67,7 +67,7 @@ public class GiftTagServiceImpl implements GiftTagService {
     }
 
     @Override
-    public List<GiftTagDTO> findAll() throws ResourceNotFoundException {
+    public List<GiftTag> findAll() throws ResourceNotFoundException {
         List<TagDTO> tags = null;
         try {
             tags = tagDAO.findAll();
@@ -75,10 +75,10 @@ public class GiftTagServiceImpl implements GiftTagService {
             logger.error("Failed to find tags", e);
             throw new ResourceNotFoundException("Failed to find tags", e);
         }
-        List<GiftTagDTO> giftTagDTOList = new ArrayList<>();
+        List<GiftTag> giftTagList = new ArrayList<>();
         for (TagDTO tag : tags) {
-            giftTagDTOList.add(GiftTagDtoToTagDtoConverter.convertToServiceLayerEntity(tag));
+            giftTagList.add(GiftTagDtoToTagDtoConverter.convertToServiceLayerEntity(tag));
         }
-        return giftTagDTOList;
+        return giftTagList;
     }
 }
