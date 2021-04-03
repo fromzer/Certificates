@@ -1,18 +1,16 @@
 package com.epam.esm.dao.extractor;
 
-import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.util.ToDTOConverter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class TagResultSetExtractor implements ResultSetExtractor<TagDTO> {
+public class TagResultSetExtractor implements ResultSetExtractor<Tag> {
 
     @Override
-    public TagDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
+    public Tag extractData(ResultSet rs) throws SQLException, DataAccessException {
         Tag tag = null;
         while (rs.next()) {
             if (tag == null) {
@@ -22,6 +20,6 @@ public class TagResultSetExtractor implements ResultSetExtractor<TagDTO> {
                         .build();
             }
         }
-        return ToDTOConverter.convertToTagDTO(tag);
+        return tag;
     }
 }

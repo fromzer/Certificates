@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +21,5 @@ public class Certificate implements Entity{
     private Integer duration;
     private ZonedDateTime createDate;
     private ZonedDateTime lastUpdateDate;
+    private Set<Tag> tags;
 }

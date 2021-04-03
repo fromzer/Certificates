@@ -5,7 +5,7 @@ import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
 
-import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 
 public class ToDTOConverter {
     public static CertificateDTO convertToCertificateDTO(Certificate certificate) {
@@ -19,8 +19,12 @@ public class ToDTOConverter {
                     .price(certificate.getPrice())
                     .createDate(certificate.getCreateDate())
                     .lastUpdateDate(certificate.getLastUpdateDate())
-                    .tags(new LinkedHashSet<>())
                     .build();
+        }
+        if (certificate.getTags() != null && !certificate.getTags().isEmpty()) {
+            certificateDTO.setTags(certificate.getTags().stream()
+                    .map(ToDTOConverter::convertToTagDTO)
+                    .collect(Collectors.toSet()));
         }
         return certificateDTO;
     }

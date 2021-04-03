@@ -1,9 +1,7 @@
 package com.epam.esm.dao.extractor;
 
-import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.util.ToDTOConverter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -12,15 +10,13 @@ import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-public class CertificateResultSetExtractor implements ResultSetExtractor<CertificateDTO> {
+public class CertificateResultSetExtractor implements ResultSetExtractor<Certificate> {
 
     @Override
-    public CertificateDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
+    public Certificate extractData(ResultSet rs) throws SQLException, DataAccessException {
         Set<Tag> tagSet = new LinkedHashSet<>();
         Certificate certificate = null;
-        CertificateDTO certificateDTO = null;
         while (rs.next()) {
             if (certificate == null) {
                 certificate = Certificate.builder()
@@ -42,11 +38,9 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<Certifi
                 tagSet.add(tag);
             }
         }
-
-        if (certificate != null) {
-            certificateDTO = ToDTOConverter.convertToCertificateDTO(certificate);
-            certificateDTO.getTags().addAll(tagSet.stream().map(ToDTOConverter::convertToTagDTO).collect(Collectors.toSet()));
+        if (!tagSet.isEmpty()) {
+            certificate.setTags(tagSet);
         }
-        return certificateDTO;
+        return certificate;
     }
 }

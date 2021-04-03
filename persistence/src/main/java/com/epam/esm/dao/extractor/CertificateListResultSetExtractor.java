@@ -1,21 +1,20 @@
 package com.epam.esm.dao.extractor;
 
-import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.entity.Certificate;
-import com.epam.esm.util.ToDTOConverter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CertificateListResultSetExtractor implements ResultSetExtractor<List<CertificateDTO>> {
+public class CertificateListResultSetExtractor implements ResultSetExtractor<List<Certificate>> {
 
     @Override
-    public List<CertificateDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {
-        List<CertificateDTO> dtoList = new ArrayList<>();
+    public List<Certificate> extractData(ResultSet rs) throws SQLException, DataAccessException {
+        List<Certificate> certificates = new ArrayList<>();
         while (rs.next()) {
             Certificate certificate = Certificate.builder()
                     .id(rs.getLong("gift_certificate.id"))
@@ -26,11 +25,10 @@ public class CertificateListResultSetExtractor implements ResultSetExtractor<Lis
                     .createDate((rs.getTimestamp("gift_certificate.create_date").toInstant().atZone(ZoneId.systemDefault())))
                     .lastUpdateDate((rs.getTimestamp("gift_certificate.last_update_date").toInstant().atZone(ZoneId.systemDefault())))
                     .build();
-            CertificateDTO certificateDTO = ToDTOConverter.convertToCertificateDTO(certificate);
-            if (!dtoList.contains(certificateDTO)) {
-                dtoList.add(certificateDTO);
+            if (!certificates.contains(certificate)) {
+                certificates.add(certificate);
             }
         }
-        return dtoList;
+        return certificates;
     }
 }

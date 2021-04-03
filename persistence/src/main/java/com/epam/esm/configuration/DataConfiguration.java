@@ -24,8 +24,8 @@ public class DataConfiguration {
     private String password;
     @Value("${spring.datasource.maxPoolSize}")
     private String maxPoolSize;
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
+//    @Value("${spring.profiles.active}")
+//    private String activeProfile;
 
     @Bean
     @Profile("prod")
