@@ -1,4 +1,4 @@
-package com.epam.esm.dto;
+package com.epam.esm.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GiftTagDTO {
+public class GiftTag {
     private Long id;
     private String name;
 }

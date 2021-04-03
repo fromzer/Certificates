@@ -1,4 +1,4 @@
-package com.epam.esm.dto;
+package com.epam.esm.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GiftCertificateDTO {
+public class GiftCertificate {
     private Long id;
     private String name;
     private String description;
@@ -21,5 +21,5 @@ public class GiftCertificateDTO {
     private Integer duration;
     private ZonedDateTime createDate;
     private ZonedDateTime lastUpdateDate;
-    private Set<GiftTagDTO> tags;
+    private Set<GiftTag> tags;
 }

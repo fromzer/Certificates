@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     implementation project (':persistence')
+    implementation project (':api')
     implementation group: 'org.springframework', name: 'spring-context', version: springVersion
     implementation group: 'org.springframework', name: 'spring-core', version: springVersion
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.23'

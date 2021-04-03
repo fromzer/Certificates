@@ -2,4 +2,5 @@ rootProject.name = 'Certificates'
 include 'persistence'
 include 'service'
 include 'web'
+include 'api'
 
