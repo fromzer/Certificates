@@ -1,17 +1,23 @@
 package com.epam.esm.exception;
 
-public class CreateResourceException extends ServiceAbstractException {
-    public static final String ERROR_CODE = "21";
-
+public class CreateResourceException extends Exception {
     public CreateResourceException() {
-        super(ERROR_CODE);
+        super();
     }
 
     public CreateResourceException(String message) {
-        super(message, ERROR_CODE);
+        super(message);
     }
 
     public CreateResourceException(String message, Throwable cause) {
-        super(message, cause, ERROR_CODE);
+        super(message, cause);
+    }
+
+    public CreateResourceException(Throwable cause) {
+        super(cause);
+    }
+
+    protected CreateResourceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

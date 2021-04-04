@@ -1,17 +1,23 @@
 package com.epam.esm.exception;
 
-public class UpdateResourceException extends ServiceAbstractException {
-    public static final String ERROR_CODE = "24";
-
+public class UpdateResourceException extends Exception{
     public UpdateResourceException() {
-        super(ERROR_CODE);
+        super();
     }
 
     public UpdateResourceException(String message) {
-        super(message, ERROR_CODE);
+        super(message);
     }
 
     public UpdateResourceException(String message, Throwable cause) {
-        super(message, cause, ERROR_CODE);
+        super(message, cause);
+    }
+
+    public UpdateResourceException(Throwable cause) {
+        super(cause);
+    }
+
+    protected UpdateResourceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

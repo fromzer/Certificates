@@ -3,8 +3,8 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.impl.CertificateDAOImpl;
 import com.epam.esm.dto.CertificateDTO;
-import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.exception.*;
+import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.utils.converter.GiftCertificateDtoToCertificateDtoConverter;
 import org.slf4j.Logger;
@@ -30,8 +30,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificate update(GiftCertificate certificateDTO) throws UpdateResourceException {
         CertificateDTO dto;
         try {
+            findById(certificateDTO.getId());
             dto = certificateDAO.update(GiftCertificateDtoToCertificateDtoConverter.convertToPersistenceLayerEntity(certificateDTO));
-        } catch (UpdateEntityException e) {
+        } catch (UpdateEntityException | ResourceNotFoundException e) {
             logger.error("Failed to update certificate", e);
             throw new UpdateResourceException("Failed to update certificate", e);
         }
@@ -51,8 +52,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificate findById(Long id) throws ResourceNotFoundException {
         try {
-            CertificateDTO certificateDTO = certificateDAO.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Requested resource not found (id = " + id + ")"));
+            CertificateDTO certificateDTO = certificateDAO.findById(id);
+            if (certificateDTO == null) {
+                throw new ResourceNotFoundException("Requested resource not found (id = " + id + ")");
+            }
             return GiftCertificateDtoToCertificateDtoConverter.convertToServiceLayerEntity(certificateDTO);
         } catch (EntityRetrievalException e) {
             logger.error("Failed to find certificate by id", e);
@@ -63,8 +66,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public void delete(GiftCertificate entity) throws DeleteResourceException {
         try {
+            findById(entity.getId());
             certificateDAO.delete(CertificateDTO.builder().id(entity.getId()).build());
-        } catch (DeleteEntityException e) {
+        } catch (DeleteEntityException | ResourceNotFoundException e) {
             logger.error("Failed to delete certificate", e);
             throw new DeleteResourceException("Failed to delete certificate", e);
         }
@@ -84,9 +88,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificate> findCertificateByParams(String tag, String name, String description, String sort) throws ResourceNotFoundException {
-        if (tag == null & name == null && description == null && sort == null) {
-            return findAll();
-        }
         try {
             return certificateDAO.findCertificateByParams(tag, name, description, sort).stream()
                     .map(GiftCertificateDtoToCertificateDtoConverter::convertToServiceLayerEntity)

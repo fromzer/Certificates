@@ -1,23 +1,31 @@
 package com.epam.esm.utils.converter;
 
-import com.epam.esm.model.GiftTag;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.model.GiftTag;
 
 public class GiftTagDtoToTagDtoConverter {
 
 
     public static GiftTag convertToServiceLayerEntity(TagDTO entityDto) {
-        return GiftTag.builder()
-                .id(entityDto.getId())
-                .name(entityDto.getName())
-                .build();
+        GiftTag giftTag = null;
+        if (entityDto != null) {
+            giftTag = GiftTag.builder()
+                    .id(entityDto.getId())
+                    .name(entityDto.getName())
+                    .build();
+        }
+        return giftTag;
     }
 
 
     public static TagDTO convertToPersistenceLayerEntity(GiftTag entityDto) {
-        return TagDTO.builder()
-                .id(entityDto.getId())
-                .name(entityDto.getName())
-                .build();
+        TagDTO tagDTO = null;
+        if (entityDto != null) {
+            tagDTO = TagDTO.builder()
+                    .id(entityDto.getId())
+                    .name(entityDto.getName())
+                    .build();
+        }
+        return tagDTO;
     }
 }

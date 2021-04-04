@@ -1,17 +1,23 @@
 package com.epam.esm.exception;
 
-public class DeleteEntityException extends AbstractDAOException {
-    public static final String ERROR_CODE = "12";
-
+public class DeleteEntityException extends Exception {
     public DeleteEntityException() {
-        super(ERROR_CODE);
+        super();
     }
 
     public DeleteEntityException(String message) {
-        super(message, ERROR_CODE);
+        super(message);
     }
 
     public DeleteEntityException(String message, Throwable cause) {
-        super(message, cause, ERROR_CODE);
+        super(message, cause);
+    }
+
+    public DeleteEntityException(Throwable cause) {
+        super(cause);
+    }
+
+    protected DeleteEntityException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

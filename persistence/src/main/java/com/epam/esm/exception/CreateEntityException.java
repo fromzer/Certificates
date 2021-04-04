@@ -1,17 +1,23 @@
 package com.epam.esm.exception;
 
-public class CreateEntityException extends AbstractDAOException{
-    public static final String ERROR_CODE = "11";
-
+public class CreateEntityException extends Exception {
     public CreateEntityException() {
-        super(ERROR_CODE);
+        super();
     }
 
     public CreateEntityException(String message) {
-        super(message, ERROR_CODE);
+        super(message);
     }
 
     public CreateEntityException(String message, Throwable cause) {
-        super(message, cause, ERROR_CODE);
+        super(message, cause);
+    }
+
+    public CreateEntityException(Throwable cause) {
+        super(cause);
+    }
+
+    protected CreateEntityException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

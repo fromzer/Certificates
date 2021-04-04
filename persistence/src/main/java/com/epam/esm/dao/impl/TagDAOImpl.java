@@ -21,7 +21,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -50,22 +53,21 @@ public class TagDAOImpl implements TagDAO {
             jdbcTemplate.update(SQL_INSERT_CREATE_TAG, parameterSource, holder, new String[]{"id"});
         } catch (DataAccessException ex) {
             logger.error("Request create tag execution error", ex);
-            throw new CreateEntityException("Request create tag execution error", ex);
+            throw new CreateEntityException(ex);
         }
         return holder.getKey().longValue();
     }
 
     @Override
-    public Optional<TagDTO> findById(Long id) throws EntityRetrievalException {
+    public TagDTO findById(Long id) throws EntityRetrievalException {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("id", id);
         try {
-            Tag tag = Optional.ofNullable(jdbcTemplate.query(SQL_SELECT_FIND_BY_ID, parameterSource, new TagResultSetExtractor()))
-                    .orElseThrow(() -> new EntityRetrievalException("Tag is not found"));
-            return Optional.of(ToDTOConverter.convertToTagDTO(tag));
-        } catch (DataAccessException | EntityRetrievalException ex) {
+            Tag tag =jdbcTemplate.query(SQL_SELECT_FIND_BY_ID, parameterSource, new TagResultSetExtractor());
+            return ToDTOConverter.convertToTagDTO(tag);
+        } catch (DataAccessException ex) {
             logger.error("Tag is not found", ex);
-            throw new EntityRetrievalException("Tag is not found", ex);
+            throw new EntityRetrievalException(ex);
         }
     }
 
@@ -78,7 +80,7 @@ public class TagDAOImpl implements TagDAO {
             jdbcTemplate.update(SQL_DELETE_TAG, parameterSource);
         } catch (DataAccessException ex) {
             logger.error("Tag delete request error", ex);
-            throw new DeleteEntityException("Tag delete request error", ex);
+            throw new DeleteEntityException(ex);
         }
     }
 
@@ -91,7 +93,7 @@ public class TagDAOImpl implements TagDAO {
                     .collect(Collectors.toList());
         } catch (DataAccessException ex) {
             logger.error("Request find all tags execution error", ex);
-            throw new EntityRetrievalException("Request find all tags execution error", ex);
+            throw new EntityRetrievalException(ex);
         }
     }
 
@@ -104,7 +106,7 @@ public class TagDAOImpl implements TagDAO {
             return ToDTOConverter.convertToTagDTO(tag);
         } catch (DataAccessException ex) {
             logger.error("Request find tag by name execution error", ex);
-            throw new EntityRetrievalException("Request find tag by name execution error", ex);
+            throw new EntityRetrievalException(ex);
         }
     }
 }

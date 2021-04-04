@@ -37,8 +37,10 @@ public class GiftTagServiceImpl implements GiftTagService {
     @Override
     public GiftTag findById(Long id) throws ResourceNotFoundException {
         try {
-            TagDTO tagDTO = tagDAO.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Requested resource not found (id = " + id + ")"));
+            TagDTO tagDTO = tagDAO.findById(id);
+            if (tagDTO == null) {
+                throw new ResourceNotFoundException("Requested resource not found (id = " + id + ")");
+            }
             return GiftTagDtoToTagDtoConverter.convertToServiceLayerEntity(tagDTO);
         } catch (EntityRetrievalException e) {
             logger.error("Failed to create tag", e);
@@ -59,8 +61,9 @@ public class GiftTagServiceImpl implements GiftTagService {
     @Override
     public void delete(GiftTag entity) throws DeleteResourceException {
         try {
+            findById(entity.getId());
             tagDAO.delete(GiftTagDtoToTagDtoConverter.convertToPersistenceLayerEntity(entity));
-        } catch (DeleteEntityException e) {
+        } catch (ResourceNotFoundException | DeleteEntityException e) {
             logger.error("Failed to delete tag", e);
             throw new DeleteResourceException("Failed to delete tag", e);
         }
@@ -68,7 +71,7 @@ public class GiftTagServiceImpl implements GiftTagService {
 
     @Override
     public List<GiftTag> findAll() throws ResourceNotFoundException {
-        List<TagDTO> tags = null;
+        List<TagDTO> tags;
         try {
             tags = tagDAO.findAll();
         } catch (EntityRetrievalException e) {

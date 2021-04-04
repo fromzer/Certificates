@@ -1,7 +1,6 @@
 package com.epam.esm.dao.extractor;
 
 import com.epam.esm.entity.Certificate;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
@@ -13,7 +12,7 @@ import java.util.List;
 public class CertificateListResultSetExtractor implements ResultSetExtractor<List<Certificate>> {
 
     @Override
-    public List<Certificate> extractData(ResultSet rs) throws SQLException, DataAccessException {
+    public List<Certificate> extractData(ResultSet rs) throws SQLException {
         List<Certificate> certificates = new ArrayList<>();
         while (rs.next()) {
             Certificate certificate = Certificate.builder()

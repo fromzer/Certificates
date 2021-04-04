@@ -1,17 +1,23 @@
 package com.epam.esm.exception;
 
-public class EntityRetrievalException extends AbstractDAOException {
-    public static final String ERROR_CODE = "13";
-
+public class EntityRetrievalException extends Exception {
     public EntityRetrievalException() {
-        super(ERROR_CODE);
+        super();
     }
 
     public EntityRetrievalException(String message) {
-        super(message, ERROR_CODE);
+        super(message);
     }
 
     public EntityRetrievalException(String message, Throwable cause) {
-        super(message, cause, ERROR_CODE);
+        super(message, cause);
+    }
+
+    public EntityRetrievalException(Throwable cause) {
+        super(cause);
+    }
+
+    protected EntityRetrievalException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

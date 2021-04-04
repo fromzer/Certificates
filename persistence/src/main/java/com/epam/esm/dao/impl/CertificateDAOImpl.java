@@ -25,7 +25,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -66,10 +68,10 @@ public class CertificateDAOImpl implements CertificateDAO {
                 List<Long> tagsIdList = createTags(certificateDTO.getTags());
                 AddLinkBetweenTagAndCertificate(certificateDTO.getId(), tagsIdList);
             }
-            result = findById(certificate.getId()).get();
+            result = findById(certificate.getId());
         } catch (DataAccessException | CreateEntityException | EntityRetrievalException ex) {
             logger.error("Request update certificate execution error", ex);
-            throw new UpdateEntityException("Request update certificate execution error", ex);
+            throw new UpdateEntityException(ex);
         }
         return result;
     }
@@ -93,7 +95,7 @@ public class CertificateDAOImpl implements CertificateDAO {
             return certificateId;
         } catch (DataAccessException ex) {
             logger.error("Request create certificate execution error", ex);
-            throw new CreateEntityException("Request create certificate execution error", ex);
+            throw new CreateEntityException(ex);
         }
     }
 
@@ -115,12 +117,17 @@ public class CertificateDAOImpl implements CertificateDAO {
     }
 
     @Override
-    public Optional<CertificateDTO> findById(Long id) throws EntityRetrievalException {
+    public CertificateDTO findById(Long id) throws EntityRetrievalException {
         SqlParameterSource parameterSource = new MapSqlParameterSource()
                 .addValue("id", id);
-        Certificate certificate = Optional.ofNullable(jdbcTemplate.query(SQL_SELECT_FIND_BY_ID, parameterSource, new CertificateResultSetExtractor()))
-                .orElseThrow(() -> new EntityRetrievalException("Certificate is not found"));
-        return Optional.of(ToDTOConverter.convertToCertificateDTO(certificate));
+        try {
+            Certificate certificate = jdbcTemplate.query(SQL_SELECT_FIND_BY_ID, parameterSource, new CertificateResultSetExtractor());
+            return ToDTOConverter.convertToCertificateDTO(certificate);
+        } catch (DataAccessException ex) {
+            logger.error("Request find certificate execution error", ex);
+            throw new EntityRetrievalException(ex);
+        }
+
     }
 
     @Override
@@ -132,7 +139,7 @@ public class CertificateDAOImpl implements CertificateDAO {
             jdbcTemplate.update(SQL_DELETE_CERTIFICATE, parameterSource);
         } catch (DataAccessException ex) {
             logger.error("Request delete certificate execution error", ex);
-            throw new DeleteEntityException("Request delete certificate execution error", ex);
+            throw new DeleteEntityException(ex);
         }
     }
 
@@ -141,7 +148,8 @@ public class CertificateDAOImpl implements CertificateDAO {
         return getCertificateWithTags(SQL_SELECT_FIND_ALL);
     }
 
-    public List<CertificateDTO> findCertificateByParams(String tag, String name, String description, String sort) throws EntityRetrievalException {
+    public List<CertificateDTO> findCertificateByParams(String tag, String name, String description, String sort) throws
+            EntityRetrievalException {
         String query = querySelectFindByParams(tag, name, description, sort);
         return getCertificateWithTags(query);
     }

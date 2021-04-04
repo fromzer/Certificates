@@ -1,17 +1,23 @@
 package com.epam.esm.exception;
 
-public class ResourceNotFoundException extends ServiceAbstractException {
-    public static final String ERROR_CODE = "23";
-
+public class ResourceNotFoundException extends Exception {
     public ResourceNotFoundException() {
-        super(ERROR_CODE);
+        super();
     }
 
     public ResourceNotFoundException(String message) {
-        super(message, ERROR_CODE);
+        super(message);
     }
 
     public ResourceNotFoundException(String message, Throwable cause) {
-        super(message, cause, ERROR_CODE);
+        super(message, cause);
+    }
+
+    public ResourceNotFoundException(Throwable cause) {
+        super(cause);
+    }
+
+    protected ResourceNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

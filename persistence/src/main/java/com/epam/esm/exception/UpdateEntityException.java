@@ -1,17 +1,23 @@
 package com.epam.esm.exception;
 
-public class UpdateEntityException extends AbstractDAOException {
-    public static final String ERROR_CODE = "14";
-
+public class UpdateEntityException extends Exception {
     public UpdateEntityException() {
-        super(ERROR_CODE);
+        super();
     }
 
     public UpdateEntityException(String message) {
-        super(message, ERROR_CODE);
+        super(message);
     }
 
     public UpdateEntityException(String message, Throwable cause) {
-        super(message, cause, ERROR_CODE);
+        super(message, cause);
+    }
+
+    public UpdateEntityException(Throwable cause) {
+        super(cause);
+    }
+
+    protected UpdateEntityException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

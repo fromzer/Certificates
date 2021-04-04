@@ -2,7 +2,6 @@ package com.epam.esm.dao.extractor;
 
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
@@ -14,7 +13,7 @@ import java.util.Set;
 public class CertificateResultSetExtractor implements ResultSetExtractor<Certificate> {
 
     @Override
-    public Certificate extractData(ResultSet rs) throws SQLException, DataAccessException {
+    public Certificate extractData(ResultSet rs) throws SQLException {
         Set<Tag> tagSet = new LinkedHashSet<>();
         Certificate certificate = null;
         while (rs.next()) {
