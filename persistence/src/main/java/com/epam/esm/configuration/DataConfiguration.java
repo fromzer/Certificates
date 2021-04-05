@@ -5,8 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
 
@@ -24,8 +22,6 @@ public class DataConfiguration {
     private String password;
     @Value("${spring.datasource.maxPoolSize}")
     private String maxPoolSize;
-//    @Value("${spring.profiles.active}")
-//    private String activeProfile;
 
     @Bean
     @Profile("prod")
@@ -40,27 +36,8 @@ public class DataConfiguration {
     }
 
     @Bean
-    @Profile("dev")
-    public DataSource testDataSource() {
-        return new EmbeddedDatabaseBuilder()
-                .generateUniqueName(true)
-                .setType(EmbeddedDatabaseType.H2)
-                .setScriptEncoding("UTF-8")
-                .ignoreFailedDrops(true)
-                .addScript("create_tables.sql")
-                .addScript("add_data.sql")
-                .build();
-    }
-
-    @Bean
     @Profile("prod")
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
         return new NamedParameterJdbcTemplate(dataSource());
-    }
-
-    @Bean
-    @Profile("dev")
-    public NamedParameterJdbcTemplate testNamedParameterJdbcTemplate() {
-        return new NamedParameterJdbcTemplate(testDataSource());
     }
 }

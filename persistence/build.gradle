@@ -22,7 +22,6 @@ dependencies {
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.+'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.8.0'
 }
 
 test {
