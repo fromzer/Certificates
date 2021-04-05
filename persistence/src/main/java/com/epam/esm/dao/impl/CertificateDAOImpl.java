@@ -46,6 +46,9 @@ public class CertificateDAOImpl implements CertificateDAO {
             "VALUES (:name, :description, :price , :duration);";
     private static final String SQL_INSERT_CREATE_CERTIFICATE_TAG = "INSERT INTO gift_certificate_tag (gift_certificate_id, tag_id) VALUES (:certificateId, :tagId);";
     private static final String SQL_DELETE_CERTIFICATE = "DELETE FROM gift_certificate WHERE id = :id;";
+    private static final String BASIC_SQL_SELECT = "SELECT gift_certificate.* FROM gift_certificate\n" +
+            "LEFT OUTER JOIN gift_certificate_tag gct on gift_certificate.id = gct.gift_certificate_id\n" +
+            "LEFT OUTER JOIN tag tag on gct.tag_id = tag.id ";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final TagDAOImpl tagDAO;
@@ -63,7 +66,7 @@ public class CertificateDAOImpl implements CertificateDAO {
                 .addValue("id", certificate.getId());
         CertificateDTO result = null;
         try {
-            jdbcTemplate.update(getUpdateSqlQuery(certificate), parameterSource);
+            jdbcTemplate.update(SqlCreator.getQueryUpdateByPart(certificate), parameterSource);
             if (certificate.getTags() != null) {
                 List<Long> tagsIdList = createTags(certificateDTO.getTags());
                 AddLinkBetweenTagAndCertificate(certificateDTO.getId(), tagsIdList);
@@ -150,48 +153,8 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     public List<CertificateDTO> findCertificateByParams(String tag, String name, String description, String sort) throws
             EntityRetrievalException {
-        String query = querySelectFindByParams(tag, name, description, sort);
+        String query = SqlCreator.getQuerySelectFindByParams(tag, name, description, sort, BASIC_SQL_SELECT);
         return getCertificateWithTags(query);
-    }
-
-    private String getUpdateSqlQuery(Certificate certificate) {
-        String sqlRequest = "UPDATE gift_certificate SET ";
-        String update = " last_update_date = NOW() ";
-        String where = "WHERE id = :id";
-        StringBuilder sb = new StringBuilder();
-        sb.append(sqlRequest);
-        sb.append(certificate.getName() == null ? "" : "name = '" + certificate.getName() + "', ");
-        sb.append(certificate.getDescription() == null ? "" : "description = '" + certificate.getDescription() + "', ");
-        sb.append(certificate.getPrice() == null ? "" : "price = " + certificate.getPrice() + ", ");
-        sb.append(certificate.getDuration() == null ? "" : "duration = " + certificate.getDuration() + ", ");
-        sb.append(update);
-        sb.append(where);
-        return sb.toString();
-    }
-
-    private String querySelectFindByParams(String tag, String name, String description, String sort) {
-        String sqlRequest = "SELECT gift_certificate.* FROM gift_certificate\n" +
-                "LEFT OUTER JOIN gift_certificate_tag gct on gift_certificate.id = gct.gift_certificate_id\n" +
-                "LEFT OUTER JOIN tag tag on gct.tag_id = tag.id ";
-        if (sort == null) {
-            sort = "name,ASC";
-        }
-        String[] sortParams = sort.split(",");
-        StringBuilder sb = new StringBuilder();
-        sb.append(sqlRequest);
-        if (tag != null) {
-            sb.append("WHERE tag.name LIKE '%" + tag + "%'" + " ORDER BY gift_certificate." + sortParams[0] + " " + sortParams[1]);
-            return sb.toString();
-        } else if (name != null) {
-            sb.append("WHERE gift_certificate.name LIKE '%" + name + "%'" + " ORDER BY gift_certificate." + sortParams[0] + " " + sortParams[1]);
-            return sb.toString();
-        } else if (description != null) {
-            sb.append("WHERE gift_certificate.description LIKE '%" + description + "%'" + " ORDER BY gift_certificate." + sortParams[0] + " " + sortParams[1]);
-            return sb.toString();
-        } else {
-            sb.append("ORDER BY gift_certificate." + sortParams[0] + " " + sortParams[1]);
-        }
-        return sb.toString();
     }
 
     private List<CertificateDTO> getCertificateWithTags(String query) {
