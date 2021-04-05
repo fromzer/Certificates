@@ -1,6 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.CertificateDAO;
+import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dao.extractor.CertificateListResultSetExtractor;
 import com.epam.esm.dao.extractor.CertificateResultSetExtractor;
 import com.epam.esm.dao.extractor.TagListResultSetExtractor;
@@ -51,10 +52,10 @@ public class CertificateDAOImpl implements CertificateDAO {
             "LEFT OUTER JOIN tag tag on gct.tag_id = tag.id ";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final TagDAOImpl tagDAO;
+    private final TagDAO tagDAO;
 
     @Autowired
-    public CertificateDAOImpl(NamedParameterJdbcTemplate jdbcTemplate, TagDAOImpl tagDAO) {
+    public CertificateDAOImpl(NamedParameterJdbcTemplate jdbcTemplate, TagDAO tagDAO) {
         this.jdbcTemplate = jdbcTemplate;
         this.tagDAO = tagDAO;
     }
@@ -130,7 +131,6 @@ public class CertificateDAOImpl implements CertificateDAO {
             logger.error("Request find certificate execution error", ex);
             throw new EntityRetrievalException(ex);
         }
-
     }
 
     @Override
@@ -157,8 +157,14 @@ public class CertificateDAOImpl implements CertificateDAO {
         return getCertificateWithTags(query);
     }
 
-    private List<CertificateDTO> getCertificateWithTags(String query) {
-        List<Certificate> tmp = jdbcTemplate.query(query, new CertificateListResultSetExtractor());
+    private List<CertificateDTO> getCertificateWithTags(String query) throws EntityRetrievalException {
+        List<Certificate> tmp;
+        try {
+            tmp = jdbcTemplate.query(query, new CertificateListResultSetExtractor());
+        } catch (DataAccessException ex) {
+            logger.error("Request find certificates execution error", ex);
+            throw new EntityRetrievalException(ex);
+        }
         List<CertificateDTO> certificateDTOList = tmp.stream()
                 .map(ToDTOConverter::convertToCertificateDTO)
                 .collect(Collectors.toList());

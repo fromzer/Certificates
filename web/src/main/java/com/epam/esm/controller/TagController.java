@@ -4,7 +4,7 @@ import com.epam.esm.exception.CreateResourceException;
 import com.epam.esm.exception.DeleteResourceException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.GiftTag;
-import com.epam.esm.service.impl.GiftTagServiceImpl;
+import com.epam.esm.service.GiftTagService;
 import com.epam.esm.validation.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,11 +19,11 @@ import java.util.List;
 @RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 
-    private GiftTagServiceImpl tagService;
+    private GiftTagService tagService;
     private TagValidator tagValidator;
 
     @Autowired
-    public TagController(GiftTagServiceImpl tagService, TagValidator tagValidator) {
+    public TagController(GiftTagService tagService, TagValidator tagValidator) {
         this.tagService = tagService;
         this.tagValidator = tagValidator;
     }
@@ -39,7 +39,7 @@ public class TagController {
     }
 
     @DeleteMapping("/tags")
-    public ResponseEntity<Object> delete(@RequestBody GiftTag giftTag) throws DeleteResourceException {
+    public ResponseEntity<Object> delete(@RequestBody GiftTag giftTag) throws DeleteResourceException, ResourceNotFoundException {
         tagService.delete(giftTag);
         return ResponseEntity.noContent().build();
     }

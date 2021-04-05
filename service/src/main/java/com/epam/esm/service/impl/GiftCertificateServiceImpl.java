@@ -1,7 +1,7 @@
 package com.epam.esm.service.impl;
 
 
-import com.epam.esm.dao.impl.CertificateDAOImpl;
+import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.exception.*;
 import com.epam.esm.model.GiftCertificate;
@@ -11,22 +11,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     private static final Logger logger = LoggerFactory.getLogger(GiftCertificateServiceImpl.class);
-    private CertificateDAOImpl certificateDAO;
+    private CertificateDAO certificateDAO;
 
     @Autowired
-    public GiftCertificateServiceImpl(CertificateDAOImpl certificateDAO) {
+    public GiftCertificateServiceImpl(CertificateDAO certificateDAO) {
         this.certificateDAO = certificateDAO;
     }
 
-
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public GiftCertificate update(GiftCertificate certificateDTO) throws UpdateResourceException {
         CertificateDTO dto;
         try {
@@ -40,6 +43,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public Long create(GiftCertificate entity) throws CreateResourceException {
         try {
             return certificateDAO.create(GiftCertificateDtoToCertificateDtoConverter.convertToPersistenceLayerEntity(entity));
@@ -64,6 +68,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(GiftCertificate entity) throws DeleteResourceException {
         try {
             findById(entity.getId());
@@ -89,9 +94,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> findCertificateByParams(String tag, String name, String description, String sort) throws ResourceNotFoundException {
         try {
-            return certificateDAO.findCertificateByParams(tag, name, description, sort).stream()
+            List<GiftCertificate> giftCertificates = certificateDAO.findCertificateByParams(tag, name, description, sort).stream()
                     .map(GiftCertificateDtoToCertificateDtoConverter::convertToServiceLayerEntity)
                     .collect(Collectors.toList());
+            if (giftCertificates.isEmpty()) {
+                throw new ResourceNotFoundException("Not found");
+            }
+            return giftCertificates;
         } catch (EntityRetrievalException e) {
             logger.error("Failed to find certificate by params", e);
             throw new ResourceNotFoundException("Failed to find certificate by params", e);

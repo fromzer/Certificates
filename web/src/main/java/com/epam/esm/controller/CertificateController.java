@@ -2,7 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.exception.*;
 import com.epam.esm.model.GiftCertificate;
-import com.epam.esm.service.impl.GiftCertificateServiceImpl;
+import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.validation.CertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,12 +16,12 @@ import java.util.List;
 @RestController
 @RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 public class CertificateController {
-    private GiftCertificateServiceImpl giftCertificateService;
+    private GiftCertificateService giftCertificateService;
 
     private CertificateValidator certificateValidator;
 
     @Autowired
-    public CertificateController(GiftCertificateServiceImpl giftCertificateService, CertificateValidator certificateValidator) {
+    public CertificateController(GiftCertificateService giftCertificateService, CertificateValidator certificateValidator) {
         this.giftCertificateService = giftCertificateService;
         this.certificateValidator = certificateValidator;
     }
@@ -42,7 +42,7 @@ public class CertificateController {
     }
 
     @DeleteMapping("/certificates")
-    public ResponseEntity<Object> delete(@RequestBody GiftCertificate certificateDTO) throws DeleteResourceException {
+    public ResponseEntity<Object> delete(@RequestBody GiftCertificate certificateDTO) throws DeleteResourceException, ResourceNotFoundException {
         giftCertificateService.delete(certificateDTO);
         return ResponseEntity.noContent().build();
     }
