@@ -9,6 +9,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class ToEntityConverter {
+    private ToEntityConverter() {
+    }
+
     public static Certificate convertDTOToCertificate(CertificateDTO certificateDTO) {
         Certificate certificate = null;
         if (certificateDTO != null) {

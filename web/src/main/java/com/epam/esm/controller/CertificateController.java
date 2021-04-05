@@ -32,7 +32,7 @@ public class CertificateController {
     }
 
     @PostMapping("/certificates")
-    public ResponseEntity<Long> create(@Valid @RequestBody GiftCertificate giftCertificate) throws CreateResourceException, ValidationException {
+    public ResponseEntity<Long> create(@Valid @RequestBody GiftCertificate giftCertificate) throws CreateResourceException {
         return ResponseEntity.ok(giftCertificateService.create(giftCertificate));
     }
 

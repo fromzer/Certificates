@@ -4,7 +4,8 @@ import com.epam.esm.dto.TagDTO;
 import com.epam.esm.model.GiftTag;
 
 public class GiftTagDtoToTagDtoConverter {
-
+    private GiftTagDtoToTagDtoConverter() {
+    }
 
     public static GiftTag convertToServiceLayerEntity(TagDTO entityDto) {
         GiftTag giftTag = null;

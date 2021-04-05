@@ -10,6 +10,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class GiftCertificateDtoToCertificateDtoConverter {
+    private GiftCertificateDtoToCertificateDtoConverter() {
+    }
 
     public static GiftCertificate convertToServiceLayerEntity(CertificateDTO entityDto) {
         GiftCertificate giftCertificate = null;

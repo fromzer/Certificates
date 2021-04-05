@@ -8,6 +8,9 @@ import com.epam.esm.entity.Tag;
 import java.util.stream.Collectors;
 
 public class ToDTOConverter {
+    private ToDTOConverter() {
+    }
+
     public static CertificateDTO convertToCertificateDTO(Certificate certificate) {
         CertificateDTO certificateDTO = null;
         if (certificate != null) {
@@ -20,11 +23,11 @@ public class ToDTOConverter {
                     .createDate(certificate.getCreateDate())
                     .lastUpdateDate(certificate.getLastUpdateDate())
                     .build();
-                if (certificate.getTags() != null && !certificate.getTags().isEmpty()) {
-                    certificateDTO.setTags(certificate.getTags().stream()
-                            .map(ToDTOConverter::convertToTagDTO)
-                            .collect(Collectors.toSet()));
-                }
+            if (certificate.getTags() != null && !certificate.getTags().isEmpty()) {
+                certificateDTO.setTags(certificate.getTags().stream()
+                        .map(ToDTOConverter::convertToTagDTO)
+                        .collect(Collectors.toSet()));
+            }
         }
         return certificateDTO;
     }

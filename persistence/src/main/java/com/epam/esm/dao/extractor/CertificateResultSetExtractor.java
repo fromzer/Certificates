@@ -37,7 +37,7 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<Certifi
                 tagSet.add(tag);
             }
         }
-        if (!tagSet.isEmpty()) {
+        if (tagSet != null && !tagSet.isEmpty()) {
             certificate.setTags(tagSet);
         }
         return certificate;
