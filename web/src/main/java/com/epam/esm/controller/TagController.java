@@ -7,6 +7,7 @@ import com.epam.esm.model.GiftTag;
 import com.epam.esm.service.impl.GiftTagServiceImpl;
 import com.epam.esm.validation.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 
     private GiftTagServiceImpl tagService;

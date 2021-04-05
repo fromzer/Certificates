@@ -20,7 +20,6 @@ import java.util.List;
 @Import(ServiceConfiguration.class)
 public class WebConfig implements WebMvcConfigurer {
     @Bean
-    @Profile("prod")
     public ObjectMapper getObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
@@ -30,7 +29,6 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
-    @Profile("prod")
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(new MappingJackson2HttpMessageConverter(getObjectMapper()));
     }

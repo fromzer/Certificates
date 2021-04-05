@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @ComponentScan("com.epam.esm")
-@PropertySource("classpath:database.properties")
+@PropertySource("classpath:database-${spring.profiles.active}.properties")
 public class DataConfiguration {
     @Value("${spring.datasource.driverName}")
     private String driverName;
@@ -24,7 +24,6 @@ public class DataConfiguration {
     private String maxPoolSize;
 
     @Bean
-    @Profile("prod")
     public DataSource dataSource() {
         HikariConfig jdbcConfig = new HikariConfig();
         jdbcConfig.setDriverClassName(driverName);
@@ -36,7 +35,6 @@ public class DataConfiguration {
     }
 
     @Bean
-    @Profile("prod")
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
         return new NamedParameterJdbcTemplate(dataSource());
     }
