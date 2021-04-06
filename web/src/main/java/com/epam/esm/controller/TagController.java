@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * Rest controller for Tags
+ *
+ * @author Egor Miheev
+ * @version 1.0.0
+ */
 @RestController
 @RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
@@ -33,22 +39,49 @@ public class TagController {
         binder.addValidators(tagValidator);
     }
 
+    /**
+     * Create tag
+     *
+     * @param tag the GiftTag
+     * @return the response entity
+     * @throws CreateResourceException the service exception
+     */
     @PostMapping("/tags")
     public ResponseEntity<Long> create(@Valid @RequestBody GiftTag tag) throws CreateResourceException {
         return ResponseEntity.ok(tagService.create(tag));
     }
 
+    /**
+     * Delete tag
+     *
+     * @param giftTag the GiftTag
+     * @return the response entity
+     * @throws ResourceNotFoundException the resource not found exception
+     */
     @DeleteMapping("/tags")
     public ResponseEntity<Object> delete(@RequestBody GiftTag giftTag) throws DeleteResourceException, ResourceNotFoundException {
         tagService.delete(giftTag);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Get tag by id
+     *
+         * @param id the GiftTag id
+     * @return the tag
+     * @throws ResourceNotFoundException the resource not found exception
+     */
     @GetMapping("/tags/{id}")
     public ResponseEntity<GiftTag> getTagById(@PathVariable Long id) throws ResourceNotFoundException {
         return ResponseEntity.ok(tagService.findById(id));
     }
 
+    /**
+     * Get all tags
+     *
+     * @return List of GiftTags
+     * @throws ResourceNotFoundException the resource not found exception
+     */
     @GetMapping("/tags")
     public ResponseEntity<List<GiftTag>> getAll() throws ResourceNotFoundException {
         return ResponseEntity.ok(tagService.findAll());
