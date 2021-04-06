@@ -1,7 +1,9 @@
 package com.epam.esm.exception;
 
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String DELETE_RESOURCE_MESSAGE = "exception.deleteResource";
     private static final String RESOURCE_NOT_FOUND_MESSAGE = "exception.resourceNotFound";
     private static final String UPDATE_RESOURCE_MESSAGE = "exception.updateResource";
+    private static final String TYPE_MISMATCH_MESSAGE = "exception.typeMismatch";
     private final MessageSource messageSource;
 
 
@@ -61,6 +64,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        Locale locale = Locale.getDefault();
+        String msg = messageSource.getMessage(TYPE_MISMATCH_MESSAGE, null, locale);
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", status.value());
+        body.put("errorMessage", msg);
+        body.put("errorCode", status.value() + "" + (status.value() / 10 + 11));
+        return new ResponseEntity<>(body, headers, status);
+    }
+
+    @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
                                                                   HttpStatus status, WebRequest request) {
@@ -69,7 +83,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> errors = ex.getBindingResult()
                 .getAllErrors()
                 .stream()
-                .map(x -> x.getDefaultMessage())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
         body.put("errorMessage", errors);
         body.put("errorCode", status.value() + "" + (status.value() / 10));
