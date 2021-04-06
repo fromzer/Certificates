@@ -29,7 +29,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     public GiftCertificate update(GiftCertificate certificateDTO) throws UpdateResourceException {
         CertificateDTO dto;
         try {
@@ -43,7 +43,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     public Long create(GiftCertificate entity) throws CreateResourceException {
         try {
             return certificateDAO.create(GiftCertificateDtoToCertificateDtoConverter.convertToPersistenceLayerEntity(entity));
@@ -68,7 +68,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(GiftCertificate entity) throws DeleteResourceException {
         try {
             findById(entity.getId());

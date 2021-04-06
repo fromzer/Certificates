@@ -28,7 +28,7 @@ public class GiftTagServiceImpl implements GiftTagService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     public Long create(GiftTag entity) throws CreateResourceException {
         try {
             return tagDAO.create(GiftTagDtoToTagDtoConverter.convertToPersistenceLayerEntity(entity));
@@ -63,7 +63,7 @@ public class GiftTagServiceImpl implements GiftTagService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     public void delete(GiftTag entity) throws DeleteResourceException {
         try {
             findById(entity.getId());

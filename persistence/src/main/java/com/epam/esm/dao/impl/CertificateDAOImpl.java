@@ -25,6 +25,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class CertificateDAOImpl implements CertificateDAO {
     private static final Logger logger = LoggerFactory.getLogger(CertificateDAOImpl.class);
     private static final String SQL_SELECT_FIND_BY_ID = "SELECT gift_certificate.*, tag.* FROM gift_certificate\n" +
@@ -61,6 +64,7 @@ public class CertificateDAOImpl implements CertificateDAO {
     }
 
     @Override
+    @Transactional
     public CertificateDTO update(CertificateDTO certificateDTO) throws UpdateEntityException {
         Certificate certificate = ToEntityConverter.convertDTOToCertificate(certificateDTO);
         SqlParameterSource parameterSource = new MapSqlParameterSource()
@@ -81,6 +85,7 @@ public class CertificateDAOImpl implements CertificateDAO {
     }
 
     @Override
+    @Transactional
     public Long create(CertificateDTO entity) throws CreateEntityException {
         Certificate certificate = ToEntityConverter.convertDTOToCertificate(entity);
         KeyHolder holder = new GeneratedKeyHolder();

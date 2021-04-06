@@ -20,6 +20,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class TagDAOImpl implements TagDAO {
     private static final Logger logger = LoggerFactory.getLogger(TagDAOImpl.class);
     private static final String SQL_SELECT_FIND_BY_ID = "SELECT id, name FROM tag WHERE id = :id;";
@@ -44,6 +47,7 @@ public class TagDAOImpl implements TagDAO {
     }
 
     @Override
+    @Transactional
     public Long create(TagDTO entity) throws CreateEntityException {
         Tag tag = ToEntityConverter.convertDTOToTag(entity);
         KeyHolder holder = new GeneratedKeyHolder();
