@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.exception.CreateResourceException;
-import com.epam.esm.exception.DeleteResourceException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.GiftTag;
 import com.epam.esm.service.GiftTagService;
@@ -22,7 +21,7 @@ import java.util.List;
  * @version 1.0.0
  */
 @RestController
-@RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/tags", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 
     private GiftTagService tagService;
@@ -46,8 +45,8 @@ public class TagController {
      * @return the response entity
      * @throws CreateResourceException the service exception
      */
-    @PostMapping("/tags")
-    public ResponseEntity<Long> create(@Valid @RequestBody GiftTag tag) throws CreateResourceException {
+    @PostMapping
+    public ResponseEntity<Long> create(@Valid @RequestBody GiftTag tag) {
         return ResponseEntity.ok(tagService.create(tag));
     }
 
@@ -58,8 +57,8 @@ public class TagController {
      * @return the response entity
      * @throws ResourceNotFoundException the resource not found exception
      */
-    @DeleteMapping("/tags")
-    public ResponseEntity<Object> delete(@RequestBody GiftTag giftTag) throws DeleteResourceException, ResourceNotFoundException {
+    @DeleteMapping
+    public ResponseEntity<Object> delete(@RequestBody GiftTag giftTag) {
         tagService.delete(giftTag);
         return ResponseEntity.noContent().build();
     }
@@ -67,12 +66,12 @@ public class TagController {
     /**
      * Get tag by id
      *
-         * @param id the GiftTag id
+     * @param id the GiftTag id
      * @return the tag
      * @throws ResourceNotFoundException the resource not found exception
      */
-    @GetMapping("/tags/{id}")
-    public ResponseEntity<GiftTag> getTagById(@PathVariable Long id) throws ResourceNotFoundException {
+    @GetMapping("/{id}")
+    public ResponseEntity<GiftTag> getTagById(@PathVariable Long id) {
         return ResponseEntity.ok(tagService.findById(id));
     }
 
@@ -82,8 +81,8 @@ public class TagController {
      * @return List of GiftTags
      * @throws ResourceNotFoundException the resource not found exception
      */
-    @GetMapping("/tags")
-    public ResponseEntity<List<GiftTag>> getAll() throws ResourceNotFoundException {
+    @GetMapping
+    public ResponseEntity<List<GiftTag>> getAll() {
         return ResponseEntity.ok(tagService.findAll());
     }
 }

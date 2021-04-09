@@ -1,11 +1,9 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dto.CertificateDTO;
+import com.epam.esm.dto.SearchAndSortParams;
 import com.epam.esm.dto.TagDTO;
-import com.epam.esm.exception.CreateEntityException;
-import com.epam.esm.exception.DeleteEntityException;
-import com.epam.esm.exception.EntityRetrievalException;
-import com.epam.esm.exception.UpdateEntityException;
+import com.epam.esm.exception.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -48,24 +46,24 @@ class CertificateDAOImplTest {
             .build();
 
     @Test
-    void isUpdated_ShouldUpdateOnlyName() throws EntityRetrievalException, UpdateEntityException {
+    void shouldUpdateOnlyName() throws EntityRetrievalException, UpdateEntityException {
         CertificateDTO certificateDTO = certificateDAO.findById(2L);
         certificateDTO.setName("New Name");
-        CertificateDTO result = certificateDAO.update(certificateDTO);
-        CertificateDTO update = certificateDAO.findById(2L);
-        assertEquals(result, update);
+        CertificateDTO expected = certificateDAO.update(certificateDTO);
+        CertificateDTO actual = certificateDAO.findById(2L);
+        assertEquals(expected, actual);
     }
     @Test
-    void isUpdated_ShouldUpdateNameAndDescription() throws EntityRetrievalException, UpdateEntityException {
+    void shouldUpdateNameAndDescription() throws EntityRetrievalException, UpdateEntityException {
         CertificateDTO certificateDTO = certificateDAO.findById(5L);
         certificateDTO.setName("New Name");
         certificateDTO.setDescription("New Description");
-        CertificateDTO result = certificateDAO.update(certificateDTO);
-        CertificateDTO update = certificateDAO.findById(5L);
-        assertEquals(result, update);
+        CertificateDTO expected = certificateDAO.update(certificateDTO);
+        CertificateDTO actual = certificateDAO.findById(5L);
+        assertEquals(expected, actual);
     }
     @Test
-    void isUpdated_ShouldUpdateAllFieldsAndCreateTag() throws EntityRetrievalException, UpdateEntityException {
+    void shouldUpdateAllFieldsAndCreateTag() throws EntityRetrievalException, UpdateEntityException {
         CertificateDTO certificateDTO = certificateDAO.findById(6L);
         certificateDTO.setName("New Name");
         certificateDTO.setDescription("New Description");
@@ -75,13 +73,13 @@ class CertificateDAOImplTest {
                 .name("Update")
                 .build();
         certificateDTO.getTags().add(tagDTO);
-        CertificateDTO result = certificateDAO.update(certificateDTO);
-        CertificateDTO update = certificateDAO.findById(6L);
-        assertEquals(result, update);
+        CertificateDTO expected = certificateDAO.update(certificateDTO);
+        CertificateDTO actual = certificateDAO.findById(6L);
+        assertEquals(expected, actual);
     }
 
     @Test
-    void isCreated_ShouldCreateCertificate() throws CreateEntityException, EntityRetrievalException {
+    void shouldCreateCertificate() throws CreateEntityException, EntityRetrievalException {
         Long id = certificateDAO.create(certificate);
         CertificateDTO created = certificateDAO.findById(id);
         assertEquals(certificate.getName(), created.getName());
@@ -91,41 +89,43 @@ class CertificateDAOImplTest {
     }
 
     @Test
-    void isFound_ShouldFindCertificateById() throws EntityRetrievalException {
+    void shouldFindCertificateById() throws EntityRetrievalException {
         CertificateDTO dto = certificateDAO.findById(1L);
         assertNotNull(dto);
         assertEquals(dto.getName(), "TestCertificate");
     }
 
     @Test
-    void isNotFound_ShouldNotFindCertificateByIdNegative() throws EntityRetrievalException {
-        CertificateDTO dto = certificateDAO.findById(77L);
-        assertNull(dto);
+    void shouldNotFindReturnConvertException() throws EntityRetrievalException {
+        assertThrows(ConvertException.class, () -> certificateDAO.findById(77L));
     }
 
     @Test
-    void isDeleted_ShouldDeleteCertificate() throws DeleteEntityException, EntityRetrievalException {
+    void shouldDeleteCertificate() throws DeleteEntityException, EntityRetrievalException {
         CertificateDTO cert = CertificateDTO.builder()
                 .id(6L)
                 .build();
         certificateDAO.delete(cert);
-        assertNull(certificateDAO.findById(cert.getId()));
+        assertThrows(ConvertException.class, () -> certificateDAO.findById(cert.getId()));
     }
 
     @Test
-    void isFound_ShouldFindAllCertificates() throws EntityRetrievalException {
+    void shouldFindAllCertificates() throws EntityRetrievalException {
         CertificateDTO certificateDTO = certificateDAO.findById(1L);
         List<CertificateDTO> certificateDTOS = certificateDAO.findAll();
         assertEquals(certificateDTOS.get(0), certificateDTO);
     }
 
     @Test
-    void isFound_ShouldFindCertificateByParams() throws EntityRetrievalException {
+    void shouldFindCertificateByParams() throws EntityRetrievalException {
         CertificateDTO certificateDTO = certificateDAO.findById(1L);
         TagDTO tagDTO = tagDAOImpl.findById(2L);
-        List<CertificateDTO> certificateByTagName = certificateDAO.findCertificateByParams(tagDTO.getName(), null, null, null);
-        List<CertificateDTO> certificateByName = certificateDAO.findCertificateByParams(null, certificateDTO.getName(), null, null);
-        List<CertificateDTO> certificateByDescription = certificateDAO.findCertificateByParams(null, null, certificateDTO.getDescription(), null);
+        SearchAndSortParams paramsWithTagName = SearchAndSortParams.builder().tag(tagDTO.getName()).build();
+        SearchAndSortParams paramsWithCertName = SearchAndSortParams.builder().name(certificateDTO.getName()).build();
+        SearchAndSortParams paramsWithCertDescription = SearchAndSortParams.builder().description(certificateDTO.getDescription()).build();
+        List<CertificateDTO> certificateByTagName = certificateDAO.findCertificateByParams(paramsWithTagName);
+        List<CertificateDTO> certificateByName = certificateDAO.findCertificateByParams(paramsWithCertName);
+        List<CertificateDTO> certificateByDescription = certificateDAO.findCertificateByParams(paramsWithCertDescription);
         assertEquals(certificateByTagName.get(0).getId(), certificateDTO.getId());
         assertEquals(certificateByName.get(0).getName(), certificateDTO.getName());
         assertEquals(certificateByDescription.get(0).getDuration(), certificateDTO.getDuration());

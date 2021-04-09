@@ -1,6 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.exception.ConvertException;
 import com.epam.esm.exception.CreateEntityException;
 import com.epam.esm.exception.DeleteEntityException;
 import com.epam.esm.exception.EntityRetrievalException;
@@ -39,44 +40,43 @@ class TagDAOImplTest {
             .build();
 
     @Test
-    void isCreated_ShouldCreateTag() throws CreateEntityException, EntityRetrievalException {
+    void shouldCreateTag() throws CreateEntityException, EntityRetrievalException {
         Long idTag = tagDAOImpl.create(tagDTO);
-        TagDTO result = tagDAOImpl.findById(idTag);
-        assertEquals(result.getName(), tagDTO.getName());
+        TagDTO actual = tagDAOImpl.findById(idTag);
+        assertEquals(actual.getName(), tagDTO.getName());
     }
 
     @Test
-    void isFound_ShouldFindTagById() throws EntityRetrievalException {
+    void shouldFindTagById() throws EntityRetrievalException {
         TagDTO dto = tagDAOImpl.findById(9L);
         assertNotNull(dto);
         assertEquals(dto.getName(), "WoW");
     }
 
     @Test
-    void isNotFound_ShouldNotFindTagByIdNegative() throws EntityRetrievalException {
-        TagDTO dto = tagDAOImpl.findById(66L);
-        assertNull(dto);
+    void shouldNotFindTagById() throws EntityRetrievalException {
+        assertThrows(ConvertException.class, () -> tagDAOImpl.findById(66L));
     }
 
     @Test
-    void isDeleted_ShouldDeleteTag() throws DeleteEntityException, EntityRetrievalException {
+    void shouldDeleteTag() throws DeleteEntityException, EntityRetrievalException {
         TagDTO tag = TagDTO.builder()
                 .id(13L)
                 .build();
         tagDAOImpl.delete(tag);
-        assertNull(tagDAOImpl.findById(tag.getId()));
+        assertThrows(ConvertException.class, () -> tagDAOImpl.findById(tag.getId()));
     }
 
     @Test
-    void isFound_ShouldFindAllTags() throws EntityRetrievalException {
+    void shouldFindAllTags() throws EntityRetrievalException {
         TagDTO tag = tagDAOImpl.findById(2L);
         List<TagDTO> tags = tagDAOImpl.findAll();
         assertEquals(tags.get(0), tag);
     }
 
     @Test
-    void isFound_ShouldFindTagByName() throws EntityRetrievalException {
-        TagDTO result = tagDAOImpl.findByName("SportMaster");
-        assertEquals(result.getName(), "SportMaster");
+    void shouldFindTagByName() throws EntityRetrievalException {
+        TagDTO actual = tagDAOImpl.findByName("SportMaster");
+        assertEquals(actual.getName(), "SportMaster");
     }
 }

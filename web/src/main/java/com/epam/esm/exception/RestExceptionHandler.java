@@ -35,6 +35,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         this.messageSource = messageSource;
     }
 
+    @ExceptionHandler(value = {ConvertException.class, ConvertResourceException.class})
+    protected ResponseEntity<ErrorMessage> handleConvertException(Locale locale) {
+        String msg = messageSource.getMessage(RESOURCE_NOT_FOUND_MESSAGE, null, locale);
+        ErrorMessage errorMessage = new ErrorMessage(HttpStatus.NOT_MODIFIED.value(), msg, "30415");
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(value = UpdateResourceException.class)
     protected ResponseEntity<ErrorMessage> handleUpdateResourceException(Locale locale) {

@@ -7,6 +7,7 @@ import com.epam.esm.exception.UpdateResourceException;
 import com.epam.esm.model.GiftCertificate;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base interface for Certificates
@@ -27,12 +28,9 @@ public interface GiftCertificateService extends GiftService<GiftCertificate> {
     /**
      * Find entity
      *
-     * @param tag the GiftCertificate name
-     * @param name the GiftCertificate name or partial name
-     * @param description the GiftCertificate description or partial description
-     * @param sort string in format 'column_name,order_by'
+     * @param options the search options
      * @return list of GiftCertificates
      * @throws EntityRetrievalException if fail to retrieve data
      */
-    List<GiftCertificate> findCertificateByParams(String tag, String name, String description, String sort) throws ResourceNotFoundException;
+    List<GiftCertificate> findCertificateByParams(Map<String, String> params) throws ResourceNotFoundException;
 }

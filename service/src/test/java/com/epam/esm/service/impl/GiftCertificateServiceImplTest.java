@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.impl.CertificateDAOImpl;
 import com.epam.esm.dto.CertificateDTO;
+import com.epam.esm.dto.SearchAndSortParams;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.*;
 import com.epam.esm.model.GiftCertificate;
@@ -13,15 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GiftCertificateServiceImplTest {
@@ -33,7 +31,7 @@ class GiftCertificateServiceImplTest {
     private GiftCertificate correctGiftCertificate;
 
     @BeforeEach
-    void init() {
+    void createCertificate() {
         giftCertificateService = new GiftCertificateServiceImpl(certificateDAO);
         correctCertificate = CertificateDTO.builder()
                 .id(1l)
@@ -52,7 +50,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void isUpdated_ShouldUpdateOnlyName() throws UpdateEntityException, UpdateResourceException, EntityRetrievalException {
+    void shouldUpdateOnlyName() throws UpdateEntityException, UpdateResourceException, EntityRetrievalException {
         CertificateDTO certificate = CertificateDTO.builder()
                 .id(1l)
                 .name("new NAME")
@@ -70,12 +68,12 @@ class GiftCertificateServiceImplTest {
                 .build();
         when(certificateDAO.findById(anyLong())).thenReturn(certificateDTO);
         when(certificateDAO.update(certificate)).thenReturn(certificateDTO);
-        GiftCertificate update = giftCertificateService.update(giftCertificate);
-        assertEquals(certificateDTO.getName(), update.getName());
+        GiftCertificate actual = giftCertificateService.update(giftCertificate);
+        assertEquals(certificateDTO.getName(), actual.getName());
     }
 
     @Test
-    void isUpdated_ShouldUpdateNameAndDescription() throws EntityRetrievalException, UpdateEntityException, UpdateResourceException {
+    void shouldUpdateNameAndDescription() throws EntityRetrievalException, UpdateEntityException, UpdateResourceException {
         CertificateDTO certificate = CertificateDTO.builder()
                 .id(1l)
                 .name("new NAME")
@@ -95,11 +93,12 @@ class GiftCertificateServiceImplTest {
                 .build();
         when(certificateDAO.findById(anyLong())).thenReturn(certificateDTO);
         when(certificateDAO.update(certificate)).thenReturn(certificateDTO);
-        GiftCertificate update = giftCertificateService.update(giftCertificate);
-        assertEquals(certificateDTO.getDescription(), update.getDescription());
+        GiftCertificate actual = giftCertificateService.update(giftCertificate);
+        assertEquals(certificateDTO.getDescription(), actual.getDescription());
     }
+
     @Test
-    void isUpdated_ShouldUpdateAllFieldsAndCreateTag() throws EntityRetrievalException, UpdateEntityException, UpdateResourceException {
+    void shouldUpdateAllFieldsAndCreateTag() throws EntityRetrievalException, UpdateEntityException, UpdateResourceException {
         TagDTO tagDTO = TagDTO.builder()
                 .id(1l)
                 .name("moto")
@@ -148,19 +147,20 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void isCreated_ShouldCreateCertificate() throws CreateEntityException, CreateResourceException {
+    void shouldCreateCertificate() throws CreateEntityException, CreateResourceException {
         when(certificateDAO.create(correctCertificate)).thenReturn(1l);
         assertEquals(correctCertificate.getId(), giftCertificateService.create(correctGiftCertificate));
     }
 
     @Test
-    void isFound_ShouldFindCertificateById() throws ResourceNotFoundException, EntityRetrievalException {
+    void ShouldFindCertificateById() throws ResourceNotFoundException, EntityRetrievalException {
         when(certificateDAO.findById(anyLong())).thenReturn(correctCertificate);
         GiftCertificate actual = giftCertificateService.findById(1L);
         assertEquals(correctGiftCertificate, actual);
     }
+
     @Test
-    void isNotFound_ShouldNotFindCertificateByIdNegative() throws ResourceNotFoundException, EntityRetrievalException {
+    void ShouldNotFindCertificateById() throws ResourceNotFoundException, EntityRetrievalException {
         when(certificateDAO.findById(anyLong())).thenReturn(correctCertificate);
         GiftCertificate actual = giftCertificateService.findById(1L);
         GiftCertificate ex = GiftCertificate.builder()
@@ -175,13 +175,12 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void isDeleted_ShouldDeleteCertificate() throws DeleteEntityException {
-        lenient().doThrow(new DeleteEntityException()).when(certificateDAO).delete(any(CertificateDTO.class));
-        assertThrows(DeleteResourceException.class, () -> giftCertificateService.delete(correctGiftCertificate));
+    void shouldDeleteCertificate() throws DeleteEntityException {
+        assertThrows(ConvertResourceException.class, () -> giftCertificateService.delete(correctGiftCertificate));
     }
 
     @Test
-    void isFound_ShouldFindAllCertificates() throws EntityRetrievalException, ResourceNotFoundException {
+    void shouldFindAllCertificates() throws EntityRetrievalException, ResourceNotFoundException {
         List<CertificateDTO> certificateDTOList = new ArrayList<>();
         certificateDTOList.add(correctCertificate);
         when(certificateDAO.findAll()).thenReturn(certificateDTOList);
@@ -189,7 +188,7 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void isFound_ShouldFindCertificateByParams() throws EntityRetrievalException, ResourceNotFoundException {
+    void shouldFindCertificateByParams() throws EntityRetrievalException, ResourceNotFoundException {
         TagDTO tagDTO = TagDTO.builder()
                 .id(1l)
                 .name("moto")
@@ -210,18 +209,19 @@ class GiftCertificateServiceImplTest {
                 .build();
         List<CertificateDTO> certificateDTOList = new ArrayList<>();
         certificateDTOList.add(certificateDTO);
-        String tagName = "moto";
-        String findCertificateName = "Hello";
-        String findCertificateDescription = "World";
-        when(certificateDAO.findCertificateByParams(tagName, null, null, null)).thenReturn(certificateDTOList);
-        when(certificateDAO.findCertificateByParams(null, findCertificateName, null, null)).thenReturn(certificateDTOList);
-        when(certificateDAO.findCertificateByParams(null, null, findCertificateDescription, null)).thenReturn(certificateDTOList);
-        GiftCertificate giftCertificateFindByTag = giftCertificateService.findCertificateByParams(tagName, null, null, null).get(0);
-        GiftCertificate giftCertificateFindByName = giftCertificateService.findCertificateByParams(null, findCertificateName, null, null).get(0);
-        GiftCertificate giftCertificateFindByDescription = giftCertificateService.findCertificateByParams(null, null, findCertificateDescription, null).get(0);
+        when(certificateDAO.findCertificateByParams(any(SearchAndSortParams.class))).thenReturn(certificateDTOList);
+        Map<String, String> params = new HashMap<>();
+        params.put("tag", "moto");
+        GiftCertificate giftCertificateFindByTag = giftCertificateService.findCertificateByParams(params).get(0);
+        params.remove("tag");
+        params.put("name", "Hello");
+        GiftCertificate giftCertificateFindByName = giftCertificateService.findCertificateByParams(params).get(0);
+        params.remove("name");
+        params.put("description", "World");
+        GiftCertificate giftCertificateFindByDescription = giftCertificateService.findCertificateByParams(params).get(0);
         boolean containTag = giftCertificateFindByTag.getTags().contains(giftTag);
-        boolean findByName = giftCertificateFindByName.getName().equals(findCertificateName);
-        boolean findByDescription = giftCertificateFindByDescription.getDescription().equals(findCertificateDescription);
+        boolean findByName = giftCertificateFindByName.getName().equals("Hello");
+        boolean findByDescription = giftCertificateFindByDescription.getDescription().equals("World");
         assertEquals(containTag, true);
         assertEquals(findByName, true);
         assertEquals(findByDescription, true);

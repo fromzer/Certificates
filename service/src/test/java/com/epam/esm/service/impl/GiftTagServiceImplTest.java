@@ -15,7 +15,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GiftTagServiceImplTest {
@@ -25,29 +26,28 @@ class GiftTagServiceImplTest {
     TagDTO correctTag;
     GiftTag correctGiftTag;
 
-
     @BeforeEach
-    public void init() {
+    void createTag() {
         giftTagService = new GiftTagServiceImpl(tagDAO);
         correctTag = new TagDTO(1L, "name");
         correctGiftTag = new GiftTag(1L, "name");
     }
 
     @Test
-    void isCreated_ShouldCreateTag() throws CreateEntityException, CreateResourceException {
+    void shouldCreateTag() throws CreateEntityException, CreateResourceException {
         when(tagDAO.create(correctTag)).thenReturn(1l);
         assertEquals(correctTag.getId(), giftTagService.create(correctGiftTag));
     }
 
     @Test
-    void isFound_ShouldFindTagById() throws EntityRetrievalException, ResourceNotFoundException {
+    void shouldFindTagById() throws EntityRetrievalException, ResourceNotFoundException {
         when(tagDAO.findById(anyLong())).thenReturn(correctTag);
         GiftTag actual = giftTagService.findById(1L);
         assertEquals(correctGiftTag, actual);
     }
 
     @Test
-    void isNotFound_ShouldNotFindTagByIdNegative() throws EntityRetrievalException, ResourceNotFoundException {
+    void shouldNotFindTagById() throws EntityRetrievalException, ResourceNotFoundException {
         when(tagDAO.findById(anyLong())).thenReturn(correctTag);
         GiftTag actual = giftTagService.findById(1L);
         GiftTag ex = new GiftTag(1l, "exception");
@@ -55,20 +55,20 @@ class GiftTagServiceImplTest {
     }
 
     @Test
-    void isFound_ShouldFindTagByName() throws EntityRetrievalException, ResourceNotFoundException {
+    void shouldFindTagByName() throws EntityRetrievalException, ResourceNotFoundException {
         when(tagDAO.findByName(anyString())).thenReturn(correctTag);
         GiftTag actual = giftTagService.findByName("name");
         assertEquals(correctGiftTag, actual);
     }
 
     @Test
-    void isDeleted_ShouldDeleteTagReturnException() throws DeleteEntityException {
+    void shouldDeleteTagReturnException() throws DeleteEntityException {
         lenient().doThrow(new DeleteEntityException()).when(tagDAO).delete(any(TagDTO.class));
         assertThrows(DeleteResourceException.class, () -> giftTagService.delete(correctGiftTag));
     }
 
     @Test
-    void isFound_ShouldFindAllTags() throws EntityRetrievalException, ResourceNotFoundException {
+    void shouldFindAllTags() throws EntityRetrievalException, ResourceNotFoundException {
         List<TagDTO> tagDTOList = new ArrayList<>();
         tagDTOList.add(correctTag);
         when(tagDAO.findAll()).thenReturn(tagDTOList);

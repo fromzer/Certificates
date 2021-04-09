@@ -1,6 +1,6 @@
 package com.epam.esm.exception;
 
-public class CreateEntityException extends Exception {
+public class CreateEntityException extends RuntimeException {
     public CreateEntityException() {
         super();
     }

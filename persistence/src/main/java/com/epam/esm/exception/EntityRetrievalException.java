@@ -1,6 +1,6 @@
 package com.epam.esm.exception;
 
-public class EntityRetrievalException extends Exception {
+public class EntityRetrievalException extends RuntimeException {
     public EntityRetrievalException() {
         super();
     }

@@ -1,6 +1,9 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.exception.*;
+import com.epam.esm.exception.CreateResourceException;
+import com.epam.esm.exception.DeleteResourceException;
+import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.exception.UpdateResourceException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.validation.CertificateValidator;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Rest controller for Certificates
@@ -20,7 +24,7 @@ import java.util.List;
  * @version 1.0.0
  */
 @RestController
-@RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/certificates", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class CertificateController {
     private GiftCertificateService giftCertificateService;
 
@@ -44,8 +48,8 @@ public class CertificateController {
      * @return new certificate's id
      * @throws CreateResourceException the service exception
      */
-    @PostMapping("/certificates")
-    public ResponseEntity<Long> create(@Valid @RequestBody GiftCertificate giftCertificate) throws CreateResourceException {
+    @PostMapping
+    public ResponseEntity<Long> create(@Valid @RequestBody GiftCertificate giftCertificate) {
         return ResponseEntity.ok(giftCertificateService.create(giftCertificate));
     }
 
@@ -56,8 +60,8 @@ public class CertificateController {
      * @return certificate and tags
      * @throws UpdateResourceException the service exception
      */
-    @PatchMapping("/certificates")
-    public ResponseEntity<GiftCertificate> update(@Valid @RequestBody GiftCertificate giftCertificate) throws UpdateResourceException {
+    @PatchMapping
+    public ResponseEntity<GiftCertificate> update(@Valid @RequestBody GiftCertificate giftCertificate) {
         return ResponseEntity.ok(giftCertificateService.update(giftCertificate));
     }
 
@@ -66,11 +70,11 @@ public class CertificateController {
      *
      * @param giftCertificate the certificate
      * @return response entity
-     * @throws DeleteResourceException the service exception
+     * @throws DeleteResourceException   the service exception
      * @throws ResourceNotFoundException the resource not found exception
      */
-    @DeleteMapping("/certificates")
-    public ResponseEntity<Object> delete(@RequestBody GiftCertificate giftCertificate) throws DeleteResourceException, ResourceNotFoundException {
+    @DeleteMapping
+    public ResponseEntity<Object> delete(@RequestBody GiftCertificate giftCertificate) {
         giftCertificateService.delete(giftCertificate);
         return ResponseEntity.noContent().build();
     }
@@ -82,30 +86,24 @@ public class CertificateController {
      * @return the giftTag
      * @throws ResourceNotFoundException the resource not found exception
      */
-    @GetMapping("/certificates/{id}")
-    public ResponseEntity<GiftCertificate> getCertificateById(@PathVariable Long id) throws ResourceNotFoundException {
+    @GetMapping("/{id}")
+    public ResponseEntity<GiftCertificate> getCertificateById(@PathVariable Long id) {
         return ResponseEntity.ok(giftCertificateService.findById(id));
     }
 
     /**
      * Get certificates by parameters
      *
-     * @param tag the GiftTag name
-     * @param name the GiftCertificate name or partial name
-     * @param description the GiftCertificate description or partial description
-     * @param sort string in format 'column_name,order_by'
+     * @param params the search and sort params
      * @return list of giftCertificate
      * @throws ResourceNotFoundException
      */
-    @GetMapping("/certificates")
+    @GetMapping
     public ResponseEntity<List<GiftCertificate>> getCertificatesWithParameters(
-            @RequestParam(value = "tag", required = false) String tag,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "sort", required = false) String sort) throws ResourceNotFoundException {
-        if (tag == null && name == null && description == null && sort == null) {
+            @RequestParam(required = false) Map<String, String> params) {
+        if (params.isEmpty()) {
             return ResponseEntity.ok(giftCertificateService.findAll());
         }
-        return ResponseEntity.ok(giftCertificateService.findCertificateByParams(tag, name, description, sort));
+        return ResponseEntity.ok(giftCertificateService.findCertificateByParams(params));
     }
 }

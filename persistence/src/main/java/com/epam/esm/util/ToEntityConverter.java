@@ -4,18 +4,20 @@ import com.epam.esm.dto.CertificateDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.ConvertException;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.stream.Collectors;
 
+@Slf4j
+@UtilityClass
 public class ToEntityConverter {
-    private ToEntityConverter() {
-    }
 
-    public static Certificate convertDTOToCertificate(CertificateDTO certificateDTO) {
-        Certificate certificate = null;
-        if (certificateDTO != null) {
-            certificate = Certificate.builder()
+    public static Certificate convertToCertificate(CertificateDTO certificateDTO) {
+        try {
+            return Certificate.builder()
                     .id(certificateDTO.getId())
                     .name(certificateDTO.getName())
                     .description(certificateDTO.getDescription())
@@ -23,29 +25,27 @@ public class ToEntityConverter {
                     .duration(certificateDTO.getDuration())
                     .createDate(certificateDTO.getCreateDate())
                     .lastUpdateDate(certificateDTO.getLastUpdateDate())
+                    .tags(CollectionUtils.isNotEmpty(certificateDTO.getTags()) ?
+                            certificateDTO.getTags().stream()
+                                    .map(ToEntityConverter::convertToTag)
+                                    .collect(Collectors.toSet())
+                            : null)
                     .build();
-            if (certificateDTO.getTags() != null) {
-                Set<Tag> tags = new LinkedHashSet<>();
-                for (TagDTO tagDTO : certificateDTO.getTags()) {
-                    tags.add(Tag.builder()
-                            .id(tagDTO.getId())
-                            .name(tagDTO.getName())
-                            .build());
-                    certificate.setTags(tags);
-                }
-            }
+        } catch (NullPointerException ex) {
+            log.error("An error occurred during conversion, an empty value", ex);
+            throw new ConvertException("An error occurred during conversion, an empty value", ex);
         }
-        return certificate;
     }
 
-    public static Tag convertDTOToTag(TagDTO tagDTO) {
-        Tag tag = null;
-        if (tagDTO != null) {
-            tag = Tag.builder()
+    public static Tag convertToTag(TagDTO tagDTO) {
+        try {
+            return Tag.builder()
                     .id(tagDTO.getId())
                     .name(tagDTO.getName())
                     .build();
+        } catch (NullPointerException ex) {
+            log.error("An error occurred during conversion, an empty value", ex);
+            throw new ConvertException("An error occurred during conversion, an empty value", ex);
         }
-        return tag;
     }
 }

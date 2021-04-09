@@ -13,7 +13,7 @@ import java.util.List;
  * @author Egor Miheev
  * @version 1.0.0
  */
-public interface Dao<K, T> {
+public interface Dao<T> {
     /**
      * Create entry in DB
      *
@@ -21,7 +21,7 @@ public interface Dao<K, T> {
      * @return entry id
      * @throws CreateEntityException if error is occurred during SQL command execution
      */
-    K create(T entity) throws CreateEntityException;
+    Long create(T entity) throws CreateEntityException;
 
     /**
      * Find entry in table
@@ -29,7 +29,7 @@ public interface Dao<K, T> {
      * @return entry
      * @throws EntityRetrievalException if fail to retrieve data from DB
      */
-    T findById(K id) throws EntityRetrievalException;
+    T findById(Long id) throws EntityRetrievalException;
 
     /**
      * Delete entry in table

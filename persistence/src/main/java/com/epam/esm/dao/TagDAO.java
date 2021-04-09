@@ -9,7 +9,7 @@ import com.epam.esm.exception.EntityRetrievalException;
  * @author Egor Miheev
  * @version 1.0.0
  */
-public interface TagDAO extends Dao<Long, TagDTO> {
+public interface TagDAO extends Dao<TagDTO> {
 
     /**
      * Find entry in table

@@ -1,31 +1,31 @@
 package com.epam.esm.dao.impl;
 
+import com.epam.esm.dto.SearchAndSortParams;
 import com.epam.esm.entity.Certificate;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class SqlCreator {
     private static final String ORDER_BY = " ORDER BY gift_certificate.";
     private static final String WHERE_TAG_NAME = "WHERE tag.name LIKE ";
     private static final String WHERE_CERTIFICATE_NAME = "WHERE gift_certificate.name LIKE ";
     private static final String WHERE_CERTIFICATE_DESCRIPTION = "WHERE gift_certificate.description LIKE ";
 
-    private SqlCreator() {
-    }
-
-    public static String getQuerySelectFindByParams(String tag, String name, String description, String sort, String sqlRequest) {
-        if (sort == null) {
-            sort = "name,ASC";
+    public static String getQuerySelectFindByParams(SearchAndSortParams params, String sqlRequest) {
+        if (params.getSort() == null) {
+            params.setSort("name,ASC");
         }
-        String[] sortParams = sort.split(",");
+        String[] sortParams = params.getSort().split(",");
         StringBuilder sb = new StringBuilder();
         sb.append(sqlRequest);
-        if (tag != null) {
-            sb.append(WHERE_TAG_NAME + "'%" + tag + "%'" + ORDER_BY + sortParams[0] + " " + sortParams[1]);
+        if (params.getTag() != null) {
+            sb.append(WHERE_TAG_NAME + "'%" + params.getTag() + "%'" + ORDER_BY + sortParams[0] + " " + sortParams[1]);
             return sb.toString();
-        } else if (name != null) {
-            sb.append(WHERE_CERTIFICATE_NAME + "'%" + name + "%'" + ORDER_BY + sortParams[0] + " " + sortParams[1]);
+        } else if (params.getName() != null) {
+            sb.append(WHERE_CERTIFICATE_NAME + "'%" + params.getName() + "%'" + ORDER_BY + sortParams[0] + " " + sortParams[1]);
             return sb.toString();
-        } else if (description != null) {
-            sb.append(WHERE_CERTIFICATE_DESCRIPTION + "'%" + description + "%'" + ORDER_BY + sortParams[0] + " " + sortParams[1]);
+        } else if (params.getDescription() != null) {
+            sb.append(WHERE_CERTIFICATE_DESCRIPTION + "'%" + params.getDescription() + "%'" + ORDER_BY + sortParams[0] + " " + sortParams[1]);
             return sb.toString();
         } else {
             sb.append(ORDER_BY + sortParams[0] + " " + sortParams[1]);
