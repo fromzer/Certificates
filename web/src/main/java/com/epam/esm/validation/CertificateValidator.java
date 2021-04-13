@@ -38,7 +38,7 @@ public class CertificateValidator implements Validator {
         if (giftCertificate.getName() != null && !giftCertificate.getName().matches(NAME_VALIDATION_PATTERN)) {
             errors.reject("400", messageSource.getMessage(VALIDATE_NAME_MESSAGE, null, locale));
         }
-        if (giftCertificate.getDescription() != null && !giftCertificate.getName().matches(DESCRIPTION_VALIDATION_PATTERN)) {
+        if (giftCertificate.getDescription() != null && !giftCertificate.getDescription().matches(DESCRIPTION_VALIDATION_PATTERN)) {
             errors.reject("400", messageSource.getMessage(VALIDATE_DESCRIPTION_MESSAGE, null, locale));
         }
         if (giftCertificate.getPrice() != null && giftCertificate.getPrice().compareTo(BigDecimal.ZERO) < 0) {

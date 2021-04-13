@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class CertificateListResultSetExtractor implements ResultSetExtractor<List<Certificate>> {
@@ -23,6 +24,7 @@ public class CertificateListResultSetExtractor implements ResultSetExtractor<Lis
                     .duration(rs.getInt("gift_certificate.duration"))
                     .createDate((rs.getTimestamp("gift_certificate.create_date").toInstant().atZone(ZoneId.systemDefault())))
                     .lastUpdateDate((rs.getTimestamp("gift_certificate.last_update_date").toInstant().atZone(ZoneId.systemDefault())))
+                    .tags(new LinkedHashSet<>())
                     .build();
             if (!certificates.contains(certificate)) {
                 certificates.add(certificate);

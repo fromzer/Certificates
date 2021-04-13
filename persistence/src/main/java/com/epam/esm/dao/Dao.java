@@ -36,7 +36,7 @@ public interface Dao<T> {
      *
      * @throws DeleteEntityException if error is occurred during SQL command execution
      */
-    void delete(T entity) throws DeleteEntityException;
+    void delete(Long id) throws DeleteEntityException;
 
     /**
      * Find all entries in table

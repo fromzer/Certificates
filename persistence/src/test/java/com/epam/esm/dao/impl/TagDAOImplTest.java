@@ -1,10 +1,10 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dto.TagDTO;
-import com.epam.esm.exception.ConvertException;
 import com.epam.esm.exception.CreateEntityException;
 import com.epam.esm.exception.DeleteEntityException;
 import com.epam.esm.exception.EntityRetrievalException;
+import com.epam.esm.exception.ExistEntityException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,7 +14,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import javax.sql.DataSource;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TagDAOImplTest {
     private DataSource dataSource;
@@ -47,15 +49,25 @@ class TagDAOImplTest {
     }
 
     @Test
+    void shouldNotCreateTag() throws CreateEntityException, EntityRetrievalException {
+        TagDTO tag = TagDTO.builder().build();
+        assertThrows(CreateEntityException.class, () -> tagDAOImpl.create(tag));
+    }
+
+    @Test
+    void shouldCreateTagIsExist() throws CreateEntityException, EntityRetrievalException {
+        assertThrows(ExistEntityException.class,() -> tagDAOImpl.create(TagDTO.builder().name("WoW").build()));
+    }
+
+    @Test
     void shouldFindTagById() throws EntityRetrievalException {
         TagDTO dto = tagDAOImpl.findById(9L);
-        assertNotNull(dto);
         assertEquals(dto.getName(), "WoW");
     }
 
     @Test
     void shouldNotFindTagById() throws EntityRetrievalException {
-        assertThrows(ConvertException.class, () -> tagDAOImpl.findById(66L));
+        assertNull(tagDAOImpl.findById(66L));
     }
 
     @Test
@@ -63,8 +75,8 @@ class TagDAOImplTest {
         TagDTO tag = TagDTO.builder()
                 .id(13L)
                 .build();
-        tagDAOImpl.delete(tag);
-        assertThrows(ConvertException.class, () -> tagDAOImpl.findById(tag.getId()));
+        tagDAOImpl.delete(tag.getId());
+        assertNull(tagDAOImpl.findById(tag.getId()));
     }
 
     @Test

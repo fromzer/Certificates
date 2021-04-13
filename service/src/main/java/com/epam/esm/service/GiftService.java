@@ -1,6 +1,8 @@
 package com.epam.esm.service;
 
-import com.epam.esm.exception.*;
+import com.epam.esm.exception.CreateResourceException;
+import com.epam.esm.exception.DeleteResourceException;
+import com.epam.esm.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -16,7 +18,7 @@ public interface GiftService<T> {
      *
      * @param entity an entity of business model
      * @return entity id
-     * @throws CreateEntityException if error is occurred during SQL command execution
+     * @throws CreateResourceException if error is occurred during SQL command execution
      */
     Long create(T entity) throws CreateResourceException;
 
@@ -24,22 +26,22 @@ public interface GiftService<T> {
      * Find entity
      *
      * @return entity
-     * @throws EntityRetrievalException if fail to retrieve data from DB
+     * @throws ResourceNotFoundException if fail to retrieve data from DB
      */
     T findById(Long id) throws ResourceNotFoundException;
 
     /**
      * Delete entity
      *
-     * @throws DeleteEntityException if error is occurred during SQL command execution
+     * @throws DeleteResourceException if error is occurred during SQL command execution
      */
-    void delete(T entity) throws DeleteResourceException, ResourceNotFoundException;
+    void delete(Long id) throws DeleteResourceException, ResourceNotFoundException;
 
     /**
      * Find all entities
      *
      * @return List of entities
-     * @throws EntityRetrievalException if fail to retrieve data from DB
+     * @throws ResourceNotFoundException if fail to retrieve data from DB
      */
     List<T> findAll() throws ResourceNotFoundException;
 }

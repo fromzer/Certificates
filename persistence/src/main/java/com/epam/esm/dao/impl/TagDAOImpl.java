@@ -8,6 +8,7 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.CreateEntityException;
 import com.epam.esm.exception.DeleteEntityException;
 import com.epam.esm.exception.EntityRetrievalException;
+import com.epam.esm.exception.ExistEntityException;
 import com.epam.esm.util.ToDTOConverter;
 import com.epam.esm.util.ToEntityConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,10 @@ public class TagDAOImpl implements TagDAO {
     @Override
     @Transactional
     public Long create(TagDTO entity) {
+        TagDTO dto = findByName(entity.getName());
+        if (dto != null) {
+            throw new ExistEntityException(entity.getName());
+        }
         try {
             Tag tag = ToEntityConverter.convertToTag(entity);
             KeyHolder holder = new GeneratedKeyHolder();
@@ -74,11 +79,10 @@ public class TagDAOImpl implements TagDAO {
     }
 
     @Override
-    public void delete(TagDTO entity) {
+    public void delete(Long id) {
         try {
-            Tag tag = ToEntityConverter.convertToTag(entity);
             SqlParameterSource parameterSource = new MapSqlParameterSource()
-                    .addValue("id", tag.getId());
+                    .addValue("id", id);
             jdbcTemplate.update(SQL_DELETE_TAG, parameterSource);
         } catch (DataAccessException ex) {
             log.error("Tag delete request error", ex);
@@ -88,27 +92,17 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public List<TagDTO> findAll() {
-        try {
-            Set<Tag> tags = jdbcTemplate.query(SQL_SELECT_FIND_ALL, new TagListResultSetExtractor());
-            return tags.stream()
-                    .map(ToDTOConverter::convertToTagDTO)
-                    .collect(Collectors.toList());
-        } catch (DataAccessException | NullPointerException ex) {
-            log.error("Request find all tags execution error", ex);
-            throw new EntityRetrievalException(ex);
-        }
+        Set<Tag> tags = jdbcTemplate.query(SQL_SELECT_FIND_ALL, new TagListResultSetExtractor());
+        return tags.stream()
+                .map(ToDTOConverter::convertToTagDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public TagDTO findByName(String name) throws EntityRetrievalException {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
-        try {
-            Tag tag = jdbcTemplate.query(SQL_SELECT_FIND_NAME, params, new TagResultSetExtractor());
-            return ToDTOConverter.convertToTagDTO(tag);
-        } catch (DataAccessException ex) {
-            log.error("Request find tag by name execution error", ex);
-            throw new EntityRetrievalException(ex);
-        }
+        Tag tag = jdbcTemplate.query(SQL_SELECT_FIND_NAME, params, new TagResultSetExtractor());
+        return ToDTOConverter.convertToTagDTO(tag);
     }
 }

@@ -1,7 +1,5 @@
-package com.epam.esm.dto;
+package com.epam.esm.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,9 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class SearchAndSortParams {
+public class SearchAndSortGiftCertificateOptions {
     private String tag;
     private String name;
     private String description;

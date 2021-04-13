@@ -69,7 +69,7 @@ public class CertificateDAOImpl implements CertificateDAO {
         try {
             Certificate certificate = ToEntityConverter.convertToCertificate(certificateDTO);
             SqlParameterSource parameterSource = new MapSqlParameterSource()
-                    .addValue("id", certificate.getId());
+                    .addValue("id", certificateDTO.getId());
             jdbcTemplate.update(SqlCreator.getQueryUpdateByPart(certificate), parameterSource);
             if (CollectionUtils.isNotEmpty(certificate.getTags())) {
                 List<Long> tagsIdList = createTags(certificateDTO.getTags());
@@ -138,11 +138,10 @@ public class CertificateDAOImpl implements CertificateDAO {
     }
 
     @Override
-    public void delete(CertificateDTO entity) {
+    public void delete(Long id) {
         try {
-            Certificate certificate = ToEntityConverter.convertToCertificate(entity);
             SqlParameterSource parameterSource = new MapSqlParameterSource()
-                    .addValue("id", certificate.getId());
+                    .addValue("id", id);
             jdbcTemplate.update(SQL_DELETE_CERTIFICATE, parameterSource);
         } catch (DataAccessException ex) {
             log.error("Request delete certificate execution error", ex);
@@ -152,14 +151,10 @@ public class CertificateDAOImpl implements CertificateDAO {
 
     @Override
     public List<CertificateDTO> findAll() {
-        try {
-            return getCertificateWithTags(SQL_SELECT_FIND_ALL);
-        } catch (DataAccessException | NullPointerException ex) {
-            log.error("Request find all tags execution error", ex);
-            throw new EntityRetrievalException(ex);
-        }
+        return getCertificateWithTags(SQL_SELECT_FIND_ALL);
     }
 
+    @Override
     public List<CertificateDTO> findCertificateByParams(SearchAndSortParams params) {
         String query = SqlCreator.getQuerySelectFindByParams(params, BASIC_SQL_SELECT);
         return getCertificateWithTags(query);

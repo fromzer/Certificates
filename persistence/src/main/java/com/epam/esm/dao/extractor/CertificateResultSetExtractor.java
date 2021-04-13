@@ -2,6 +2,7 @@ package com.epam.esm.dao.extractor;
 
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
@@ -37,7 +38,7 @@ public class CertificateResultSetExtractor implements ResultSetExtractor<Certifi
                 tagSet.add(tag);
             }
         }
-        if (tagSet != null && !tagSet.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(tagSet)) {
             certificate.setTags(tagSet);
         }
         return certificate;

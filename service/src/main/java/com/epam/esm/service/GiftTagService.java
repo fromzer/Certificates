@@ -1,7 +1,6 @@
 package com.epam.esm.service;
 
 
-import com.epam.esm.exception.EntityRetrievalException;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.GiftTag;
 
@@ -18,7 +17,7 @@ public interface GiftTagService extends GiftService<GiftTag> {
      *
      * @param name the tag name
      * @return entity
-     * @throws EntityRetrievalException if fail to retrieve data from DB
+     * @throws ResourceNotFoundException if fail to retrieve data from DB
      */
     GiftTag findByName(String name) throws ResourceNotFoundException;
 }
