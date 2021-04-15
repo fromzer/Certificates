@@ -1,4 +1,4 @@
-package com.epam.esm.entity;
+package com.epam.esm.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,10 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class GiftTag implements GiftEntity{
+public class GiftTag {
     private Long id;
     private String name;
 }

@@ -1,15 +1,23 @@
 package com.epam.esm.service;
 
 
-import com.epam.esm.dto.GiftTagDTO;
-import com.epam.esm.exception.ServiceException;
-import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.model.GiftTag;
 
-import java.util.List;
+/**
+ * Base interface for Tags
+ *
+ * @author Egor Miheev
+ * @version 1.0.0
+ */
+public interface GiftTagService extends GiftService<GiftTag> {
 
-public interface GiftTagService extends GiftService<GiftTagDTO> {
-
-    List<GiftTagDTO> getCertificateTags(GiftCertificate giftCertificate) throws ServiceException;
-
-    public GiftTagDTO findByName(String name) throws ServiceException;
+    /**
+     * Find entity by name
+     *
+     * @param name the tag name
+     * @return entity
+     * @throws ResourceNotFoundException if fail to retrieve data from DB
+     */
+    GiftTag findByName(String name) throws ResourceNotFoundException;
 }

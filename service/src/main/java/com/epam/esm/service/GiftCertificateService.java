@@ -1,17 +1,34 @@
 package com.epam.esm.service;
 
-
-import com.epam.esm.dto.GiftCertificateDTO;
-import com.epam.esm.exception.ServiceException;
-import com.epam.esm.entity.GiftTag;
+import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.exception.UpdateResourceException;
+import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.SearchAndSortGiftCertificateOptions;
 
 import java.util.List;
-import java.util.Map;
 
-public interface GiftCertificateService extends GiftService<GiftCertificateDTO> {
-    GiftCertificateDTO update(Map<String, Object> params, List<GiftTag> tags) throws ServiceException;
+/**
+ * Base interface for Certificates
+ *
+ * @author Egor Miheev
+ * @version 1.0.0
+ */
+public interface GiftCertificateService extends GiftService<GiftCertificate> {
+    /**
+     * Update entity
+     *
+     * @param certificateDTO an DTO of business model
+     * @return updated GiftCertificate
+     * @throws UpdateResourceException if fail to update data
+     */
+    GiftCertificate update(GiftCertificate certificateDTO, Long id) throws UpdateResourceException;
 
-//    List<GiftCertificateDTO> findByPartialName(String partialName) throws ServiceException;
-//
-//    List<GiftCertificateDTO> findCertificatesByTagName(String tagName) throws ServiceException;
+    /**
+     * Find entity
+     *
+     * @param options the search options
+     * @return list of GiftCertificates
+     * @throws ResourceNotFoundException if fail to retrieve data
+     */
+    List<GiftCertificate> findCertificateByParams(SearchAndSortGiftCertificateOptions options) throws ResourceNotFoundException;
 }

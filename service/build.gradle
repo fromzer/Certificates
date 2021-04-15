@@ -1,26 +1,22 @@
 plugins {
-    id 'java'
     id 'application'
 }
 
-group 'com.epam.esm'
-version '1.0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    implementation project (':persistence')
+    implementation project(':persistence')
+    implementation project(':api')
     implementation group: 'org.springframework', name: 'spring-context', version: springVersion
     implementation group: 'org.springframework', name: 'spring-core', version: springVersion
-    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.23'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: mysqlConnectorVersion
     implementation group: 'org.springframework', name: 'spring-jdbc', version: springVersion
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
-    annotationProcessor 'org.projectlombok:lombok:1.18.18'
+    implementation group: 'org.springframework', name: 'spring-tx', version: springVersion
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
     testCompile group: 'org.springframework', name: 'spring-test', version: springVersion
+    implementation group: 'org.apache.commons', name: 'commons-collections4', version: commonsCollectionsVers
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.+'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: mockitoVersion
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
 }
 
 test {

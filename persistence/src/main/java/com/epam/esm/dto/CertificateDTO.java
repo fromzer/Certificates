@@ -7,17 +7,19 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class CertificateDTO {
     private Long id;
     private String name;
     private String description;
     private BigDecimal price;
-    private int duration;
+    private Integer duration;
     private ZonedDateTime createDate;
     private ZonedDateTime lastUpdateDate;
-    private List<TagDTO> tags;
+    private Set<TagDTO> tags;
 }
